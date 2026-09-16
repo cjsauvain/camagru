@@ -1,0 +1,10 @@
+.venv/
+.gitignore
+.python-version
+docker-compose.yaml
+Makefile
+pyproject.toml
+README.md
+uv.lock
+.env
+__pycache__/
