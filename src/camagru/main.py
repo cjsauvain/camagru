@@ -1,4 +1,5 @@
 from wsgiref.simple_server import make_server
+from camagru.db.init import init
 
 
 def app(environ, start_response):
@@ -9,6 +10,7 @@ def app(environ, start_response):
 
 
 def main():
+    init()
     with make_server("", 8080, app) as httpd:
         print("Serving on port 8080...")
         httpd.serve_forever()
