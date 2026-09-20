@@ -22,19 +22,19 @@ class Image:
 def _validate_ihdr_chunk(data: bytes):
     # Check bit depth
     if data[8] != 8:
-        raise ValueError("Please use a bit depth of 8.")
+        raise ValueError("Please use a bit depth of 8")
     # Check color type
     if data[9] != 6:
-        raise ValueError("Please use color type 6 (RGBA).")
+        raise ValueError("Please use color type 6 (RGBA)")
     # Check compression method
     if data[10] != 0:
         raise ValueError(
-            "Unknown compression method, please use method 0 (deflate/inflate)."
+            "Unknown compression method, please use method 0 (deflate/inflate)"
         )
     # Check filter method
     if data[11] != 0:
         raise ValueError(
-            "Unknown filter method, please use method 0 (adaptive filtering)."
+            "Unknown filter method, please use method 0 (adaptive filtering)"
         )
     # Check interlace method
     if data[12] != 0:
@@ -43,10 +43,10 @@ def _validate_ihdr_chunk(data: bytes):
 
 def _extract_ihdr_chunk(chunk_data: bytes):
     chunk_data_len = int.from_bytes(chunk_data[:4], byteorder="big")
-    data = chunk_data[8 : 8 + chunk_data_len]
+    data = chunk_data[8:8+chunk_data_len]
     _validate_ihdr_chunk(data)
 
-    crc_stored = int.from_bytes(chunk_data[8 + chunk_data_len :], byteorder="big")
+    crc_stored = int.from_bytes(chunk_data[8+chunk_data_len:], byteorder="big")
     crc_computed = zlib.crc32(IHDR + data)
 
     return {
@@ -66,8 +66,8 @@ def _extract_ihdr_chunk(chunk_data: bytes):
 def _extract_idat_chunk(chunk_data: bytes):
     chunk_data_len = int.from_bytes(chunk_data[:4], byteorder="big")
 
-    data = chunk_data[8 : 8 + chunk_data_len]
-    crc_stored = int.from_bytes(chunk_data[8 + chunk_data_len :], byteorder="big")
+    data = chunk_data[8:8+chunk_data_len]
+    crc_stored = int.from_bytes(chunk_data[8+chunk_data_len:], byteorder="big")
     crc_computed = zlib.crc32(IDAT + data)
 
     return {
@@ -103,7 +103,7 @@ def _defilter(scanlines: bytes, width: int, height: int) -> bytes:
         if ftype > 4:
             raise ValueError(f"Unknown filter method: {ftype}")
 
-        line = bytearray(scanlines[pos + 1 : pos + stride + 1])
+        line = bytearray(scanlines[pos+1:pos+stride+1])
         pos += stride + 1
 
         for i in range(stride):
@@ -138,7 +138,9 @@ def _retrieve_chunk(chunk_data: bytes) -> dict:
         return {"type": chunk_type}
 
     if chunk["crc"] != chunk["crc_computed"]:
-        raise ValueError(f"PNG file is corrupted: Invalid CRC for chunk {chunk_type}")
+        raise ValueError(
+            f"PNG file is corrupted: Invalid CRC for chunk {chunk_type}"
+        )
 
     return chunk
 
@@ -152,7 +154,7 @@ def decode(data: bytes) -> Image:
     begin_offset = 8
 
     while begin_offset < len(data):
-        chunk_data_len = int.from_bytes(data[begin_offset : begin_offset + 4])
+        chunk_data_len = int.from_bytes(data[begin_offset:begin_offset+4])
         end_offset = begin_offset + 4 + 4 + chunk_data_len + 4
 
         chunk = _retrieve_chunk(data[begin_offset:end_offset])
@@ -177,6 +179,17 @@ def decode(data: bytes) -> Image:
     return Image(width=width, height=height, pixels=pixels)
 
 
+def _build_chunk(type: bytes, data: bytes) -> bytes:
+    crc = zlib.crc32(type + data)
+
+    return (
+        len(data).to_bytes(4, byteorder="big")
+        + type
+        + data
+        + crc.to_bytes(4, byteorder="big")
+    )
+
+
 def _build_ihdr_chunk(image: Image) -> bytes:
     ihdr_chunk_data = bytes(
         image.width.to_bytes(4, byteorder="big")
@@ -187,43 +200,21 @@ def _build_ihdr_chunk(image: Image) -> bytes:
         + image.filter_method.to_bytes(1, byteorder="big")
         + image.interlace_method.to_bytes(1, byteorder="big")
     )
-    crc = zlib.crc32(IHDR + ihdr_chunk_data)
-
-    return bytes(
-        len(ihdr_chunk_data).to_bytes(4, byteorder="big")
-        + IHDR
-        + ihdr_chunk_data
-        + crc.to_bytes(4, byteorder="big")
-    )
+    return _build_chunk(IHDR, ihdr_chunk_data)
 
 
 def _build_iend_chunk() -> bytes:
-    crc = zlib.crc32(IEND + b"")
-
-    return bytes(
-        int(0).to_bytes(4, byteorder="big")
-        + IEND
-        + b""
-        + crc.to_bytes(4, byteorder="big")
-    )
+    return _build_chunk(IEND, b"")
 
 
 def _build_idat_chunk(pixels: bytes) -> bytes:
-    idat_chunk_data = bytes(zlib.compress(pixels))
-    crc = zlib.crc32(IDAT + idat_chunk_data)
-
-    return bytes(
-        len(idat_chunk_data).to_bytes(4, byteorder="big")
-        + IDAT
-        + idat_chunk_data
-        + crc.to_bytes(4, byteorder="big")
-    )
+    return _build_chunk(IDAT, zlib.compress(pixels))
 
 
 def encode(image: Image) -> bytes:
     stride = image.width * 4
     scanlines = b"".join(
-        b"\x00" + image.pixels[y * stride : (y + 1) * stride]
+        b"\x00" + image.pixels[y*stride:(y+1)*stride]
         for y in range(image.height)
     )
     ihdr_chunk = _build_ihdr_chunk(image)

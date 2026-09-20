@@ -11,7 +11,6 @@ def from_file(target_file: Path) -> tuple[bytes, str | None]:
     return body, mime_type
 
 
-# fmt: off
 def response(
     body: str | bytes,
     status: str = "200 OK",

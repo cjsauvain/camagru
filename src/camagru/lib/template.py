@@ -21,7 +21,6 @@ def page(
     **values,
 ):
     content = render(name, raw=raw, **values)
-    # fmt: off
     return render(
         "layout.html",
         raw={"content": content, "nav": render(nav)},
