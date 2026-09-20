@@ -1,150 +1,120 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camagru - Gallery</title>
-    <link rel="stylesheet" href="../static/pico.classless.min.css">
-    <link rel="stylesheet" href="../static/style.css">
-</head>
-<body>
+<h1>Gallery</h1>
+<article>
     <header>
-        <nav>
-            <ul>
-                <li><strong>Camagru</strong></li>
-            </ul>
-            <ul>
-                <li><a href="./gallery.html">Gallery</a></li>
-                <li><a href="./editor.html">Take a photo</a></li>
-                <li><a href="./profile.html">Profile</a></li>
-                <li><a href="#" role="button">Log out</a></li>
-            </ul>
-        </nav>
+        <strong>Jordan</strong> - September 19, 2026
     </header>
-    <main>
-        <h1>Gallery</h1>
-        <article>
-            <header>
-                <strong>Jordan</strong> - September 19, 2026
-            </header>
-            <img src="../static/demo1.png" alt="Photo Demo 1">
-            <form action="/images/1/likes" method="post">
-                <button>❤️</button> <small> • 12 Likes</small>
-            </form>
-            <details>
-                <summary>Comments</summary>
-                <ul>
-                    <li><strong>Bob</strong> - Comment 1</li>
-                    <li><strong>Alice</strong> - Comment 2</li>
-                </ul>
-            </details>
-            <footer>
-                <form action="/images/1/comments" method="post">
-                    <label for="comment-1">Add a comment</label>
-                    <textarea id="comment-1" name="body" rows="1"></textarea>
-                    <button type="submit">Send</button>
-                </form>
-                <form action="/images/1/delete" method="post">
-                    <button>Delete</button>
-                </form>
-            </footer>
-        </article>
-        <article>
-            <header>
-                <strong>Kevin</strong> - September 18, 2026
-            </header>
-            <img src="../static/demo2.png" alt="Photo Demo 2">
-            <form action="/images/2/likes" method="post">
-                <button>❤️</button> <small> • 5 Likes</small>
-            </form>
-            <details>
-                <summary>Comments</summary>
-                <ul>
-                    <li><strong>Pedro</strong> - Comment 1</li>
-                    <li><strong>Laura</strong> - Comment 2</li>
-                </ul>
-            </details>
-            <footer>
-                <form action="/images/2/comments" method="post">
-                    <label for="comment-2">Add a comment</label>
-                    <textarea id="comment-2" name="body" rows="1"></textarea>
-                    <button type="submit">Send</button>
-                </form>
-            </footer>
-        </article>
-        <article>
-            <header>
-                <strong>Maxime</strong> - September 15, 2026
-            </header>
-            <img src="../static/demo3.png" alt="Photo Demo 3">
-            <form action="/images/3/likes" method="post">
-                <button>❤️</button> <small> • 51 Likes</small>
-            </form>
-            <details>
-                <summary>Comments</summary>
-                <ul>
-                    <li><strong>Henry</strong> - Comment 1</li>
-                </ul>
-            </details>
-            <footer>
-                <form action="/images/3/comments" method="post">
-                    <label for="comment-3">Add a comment</label>
-                    <textarea id="comment-3" name="body" rows="1"></textarea>
-                    <button type="submit">Send</button>
-                </form>
-            </footer>
-        </article>
-        <article>
-            <header>
-                <strong>Claire</strong> - September 10, 2026
-            </header>
-            <img src="../static/demo4.png" alt="Photo Demo 4">
-            <form action="/images/4/likes" method="post">
-                <button>❤️</button> <small> • 9 Likes</small>
-            </form>
-            <details>
-                <summary>Comments</summary>
-                <ul>
-                    <li><strong>Maria</strong> - Comment 1</li>
-                </ul>
-            </details>
-            <footer>
-                <form action="/images/4/comments" method="post">
-                    <label for="comment-4">Add a comment</label>
-                    <textarea id="comment-4" name="body" rows="1"></textarea>
-                    <button type="submit">Send</button>
-                </form>
-            </footer>
-        </article>
-        <article>
-            <header>
-                <strong>Mariana</strong> - September 8, 2026
-            </header>
-            <img src="../static/demo5.png" alt="Photo Demo 5">
-            <form action="/images/5/likes" method="post">
-                <button>❤️</button> <small> • 27 Likes</small>
-            </form>
-            <details>
-                <summary>Comments</summary>
-                <ul>
-                    <li><strong>Jack</strong> - Comment 1</li>
-                </ul>
-            </details>
-            <footer>
-                <form action="/images/5/comments" method="post">
-                    <label for="comment-5">Add a comment</label>
-                    <textarea id="comment-5" name="body" rows="1"></textarea>
-                    <button type="submit">Send</button>
-                </form>
-            </footer>
-        </article>
-        <nav aria-label="Pagination">
-            <a href="./gallery.html?page=1">Previous</a>
-            <a href="./gallery.html?page=3">Next</a>
-        </nav>
-    </main>
+    <img src="/static/demo1.png" alt="Photo Demo 1">
+    <form action="/images/1/likes" method="post">
+        <button>❤️</button> <small> • 12 Likes</small>
+    </form>
+    <details>
+        <summary>Comments</summary>
+        <ul>
+            <li><strong>Bob</strong> - Comment 1</li>
+            <li><strong>Alice</strong> - Comment 2</li>
+        </ul>
+    </details>
     <footer>
-        <small>Camagru — 42 Web Project</small>
+        <form action="/images/1/comments" method="post">
+            <label for="comment-1">Add a comment</label>
+            <textarea id="comment-1" name="body" rows="1"></textarea>
+            <button type="submit">Send</button>
+        </form>
+        <form action="/images/1/delete" method="post">
+            <button>Delete</button>
+        </form>
     </footer>
-</body>
-</html>
+</article>
+<article>
+    <header>
+        <strong>Kevin</strong> - September 18, 2026
+    </header>
+    <img src="/static/demo2.png" alt="Photo Demo 2">
+    <form action="/images/2/likes" method="post">
+        <button>❤️</button> <small> • 5 Likes</small>
+    </form>
+    <details>
+        <summary>Comments</summary>
+        <ul>
+            <li><strong>Pedro</strong> - Comment 1</li>
+            <li><strong>Laura</strong> - Comment 2</li>
+        </ul>
+    </details>
+    <footer>
+        <form action="/images/2/comments" method="post">
+            <label for="comment-2">Add a comment</label>
+            <textarea id="comment-2" name="body" rows="1"></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </footer>
+</article>
+<article>
+    <header>
+        <strong>Maxime</strong> - September 15, 2026
+    </header>
+    <img src="/static/demo3.png" alt="Photo Demo 3">
+    <form action="/images/3/likes" method="post">
+        <button>❤️</button> <small> • 51 Likes</small>
+    </form>
+    <details>
+        <summary>Comments</summary>
+        <ul>
+            <li><strong>Henry</strong> - Comment 1</li>
+        </ul>
+    </details>
+    <footer>
+        <form action="/images/3/comments" method="post">
+            <label for="comment-3">Add a comment</label>
+            <textarea id="comment-3" name="body" rows="1"></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </footer>
+</article>
+<article>
+    <header>
+        <strong>Claire</strong> - September 10, 2026
+    </header>
+    <img src="/static/demo4.png" alt="Photo Demo 4">
+    <form action="/images/4/likes" method="post">
+        <button>❤️</button> <small> • 9 Likes</small>
+    </form>
+    <details>
+        <summary>Comments</summary>
+        <ul>
+            <li><strong>Maria</strong> - Comment 1</li>
+        </ul>
+    </details>
+    <footer>
+        <form action="/images/4/comments" method="post">
+            <label for="comment-4">Add a comment</label>
+            <textarea id="comment-4" name="body" rows="1"></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </footer>
+</article>
+<article>
+    <header>
+        <strong>Mariana</strong> - September 8, 2026
+    </header>
+    <img src="/static/demo5.png" alt="Photo Demo 5">
+    <form action="/images/5/likes" method="post">
+        <button>❤️</button> <small> • 27 Likes</small>
+    </form>
+    <details>
+        <summary>Comments</summary>
+        <ul>
+            <li><strong>Jack</strong> - Comment 1</li>
+        </ul>
+    </details>
+    <footer>
+        <form action="/images/5/comments" method="post">
+            <label for="comment-5">Add a comment</label>
+            <textarea id="comment-5" name="body" rows="1"></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </footer>
+</article>
+<nav aria-label="Pagination">
+    <a href="/gallery?page=1">Previous</a>
+    <a href="/gallery?page=3">Next</a>
+</nav>

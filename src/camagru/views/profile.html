@@ -1,69 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camagru - Profile</title>
-    <link rel="stylesheet" href="../static/pico.classless.min.css">
-</head>
-<body>
-    <header>
-        <nav>
-            <ul>
-                <li><strong>Camagru</strong></li>
-            </ul>
-            <ul>
-                <li><a href="./gallery.html">Gallery</a></li>
-                <li><a href="./editor.html">Take a photo</a></li>
-                <li><a href="./profile.html">Profile</a></li>
-                <li><a href="#" role="button">Log out</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <h1>Profile</h1>
-        <article>
-            <form action="/profile/username" method="post">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" value="USERNAME PLACEHOLDER (DELETE FROM HTML)" required>
-                <button type="submit">Update</button>
-            </form>
-        </article>
-        <article>
-            <form action="/profile/email" method="post">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="EMAIL PLACEHOLDER (DELETE FROM HTML)" required>
-                <button type="submit">Update</button>
-            </form>
-        </article>
-        <article>
-            <form action="/profile/password" method="post">
-                <label for="current-password">Current Password</label>
-                <input type="password" id="current-password" name="current-password" required>
+<h1>Profile</h1>
+<article>
+    <form action="/profile/username" method="post">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" value="USERNAME PLACEHOLDER (DELETE FROM HTML)" required>
+        <button type="submit">Update</button>
+    </form>
+</article>
+<article>
+    <form action="/profile/email" method="post">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="EMAIL PLACEHOLDER (DELETE FROM HTML)" required>
+        <button type="submit">Update</button>
+    </form>
+</article>
+<article>
+    <form action="/profile/password" method="post">
+        <label for="current-password">Current Password</label>
+        <input type="password" id="current-password" name="current-password" required>
 
-                <label for="new-password">New Password</label>
-                <input type="password" id="new-password" name="new-password" required>
+        <label for="new-password">New Password</label>
+        <input type="password" id="new-password" name="new-password" required>
 
-                <label for="confirm-password">Confirm Password</label>
-                <input type="password" id="confirm-password" name="confirm-password" required>
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" name="confirm-password" required>
 
-                <button type="submit">Update</button>
-            </form>
-        </article>
-        <article>
-            <form action="/profile/notification" method="post">
-                <fieldset>
-                    <label for="notification">
-                        Notify me when someone comments my photos.
-                    </label>
-                    <input type="checkbox" id="notification" name="notify_on_comments" checked>
-                </fieldset>
-                <button type="submit">Save</button>
-            </form>
-        </article>
-    </main>
-    <footer>
-        <small>Camagru — 42 Web Project</small>
-    </footer>
-</body>
-</html>
+        <button type="submit">Update</button>
+    </form>
+</article>
+<article>
+    <form action="/profile/notification" method="post">
+        <fieldset>
+            <label for="notification">
+                Notify me when someone comments my photos.
+            </label>
+            <input type="checkbox" id="notification" name="notify_on_comments" checked>
+        </fieldset>
+        <button type="submit">Save</button>
+    </form>
+</article>

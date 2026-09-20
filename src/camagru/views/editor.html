@@ -1,73 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camagru - Take a photo</title>
-    <link rel="stylesheet" href="../static/pico.classless.min.css">
-    <link rel="stylesheet" href="../static/style.css">
-</head>
-<body>
-    <header>
-        <nav>
-            <ul>
-                <li><strong>Camagru</strong></li>
-            </ul>
-            <ul>
-                <li><a href="./gallery.html">Gallery</a></li>
-                <li><a href="./editor.html">Take a photo</a></li>
-                <li><a href="./profile.html">Profile</a></li>
-                <li><a href="#" role="button">Log out</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <h1>Take a photo</h1>
+<h1>Take a photo</h1>
 
-        <div class="editor">
-            <section>
-                <div class="preview"></div>
+<div class="editor">
+    <section>
+        <div class="preview"></div>
 
-                <fieldset>
-                    <legend>Choose an overlay:</legend>
-                    <label><input type="radio" name="overlay" value="cat"> Cat</label>
-                    <label><input type="radio" name="overlay" value="frame"> Frame</label>
-                    <label><input type="radio" name="overlay" value="hat"> Hat</label>
-                </fieldset>
+        <fieldset>
+            <legend>Choose an overlay:</legend>
+            <label><input type="radio" name="overlay" value="cat"> Cat</label>
+            <label><input type="radio" name="overlay" value="frame"> Frame</label>
+            <label><input type="radio" name="overlay" value="hat"> Hat</label>
+        </fieldset>
 
-                <fieldset>
-                    <button disabled>Take the photo</button>
-                </fieldset>
+        <fieldset>
+            <button disabled>Take the photo</button>
+        </fieldset>
 
-                <label for="upload">Or upload an image</label>
-                <input type="file" id="upload" name="photo" accept="image/*">
-            </section>
+        <label for="upload">Or upload an image</label>
+        <input type="file" id="upload" name="photo" accept="image/*">
+    </section>
 
-            <aside>
-                <h2>My photos</h2>
-                <article>
-                    <img src="../static/demo1.png" alt="Photo taken on September 19">
-                    <form action="/images/1/delete" method="post">
-                        <button>Delete</button>
-                    </form>
-                </article>
-                <article>
-                    <img src="../static/demo2.png" alt="Photo taken on September 18">
-                    <form action="/images/2/delete" method="post">
-                        <button>Delete</button>
-                    </form>
-                </article>
-                <article>
-                    <img src="../static/demo3.png" alt="Photo taken on September 15">
-                    <form action="/images/3/delete" method="post">
-                        <button>Delete</button>
-                    </form>
-                </article>
-            </aside>
-        </div>
-    </main>
-    <footer>
-        <small>Camagru — 42 Web Project</small>
-    </footer>
-</body>
-</html>
+    <aside>
+        <h2>My photos</h2>
+        <article>
+            <img src="/static/demo1.png" alt="Photo taken on September 19">
+            <form action="/images/1/delete" method="post">
+                <button>Delete</button>
+            </form>
+        </article>
+        <article>
+            <img src="/static/demo2.png" alt="Photo taken on September 18">
+            <form action="/images/2/delete" method="post">
+                <button>Delete</button>
+            </form>
+        </article>
+        <article>
+            <img src="/static/demo3.png" alt="Photo taken on September 15">
+            <form action="/images/3/delete" method="post">
+                <button>Delete</button>
+            </form>
+        </article>
+    </aside>
+</div>
