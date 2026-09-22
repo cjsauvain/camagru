@@ -1,4 +1,5 @@
 import html
+import sqlite3
 from string import Template
 from pathlib import Path
 
@@ -16,11 +17,12 @@ def render(name: str, raw: dict | None = None, **values) -> str:
 def page(
     name: str,
     title: str,
-    nav: str = "_nav_guest.html",
+    user: sqlite3.Row | None = None,
     raw: dict | None = None,
     **values,
-):
+) -> str:
     content = render(name, raw=raw, **values)
+    nav = "_nav_user.html" if user else "_nav_guest.html"
     return render(
         "layout.html",
         raw={"content": content, "nav": render(nav)},

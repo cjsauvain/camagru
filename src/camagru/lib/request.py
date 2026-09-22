@@ -1,4 +1,5 @@
 from http.cookies import SimpleCookie
+import sqlite3
 from urllib.parse import parse_qs
 from wsgiref.types import WSGIEnvironment
 
@@ -7,13 +8,14 @@ SIZE_MAX = 2_000_000
 
 class Request:
     def __init__(self, environ: WSGIEnvironment) -> None:
-        self.method = environ["REQUEST_METHOD"]
-        self.path = environ["PATH_INFO"]
-        self.query = self._flatten(
+        self.method: str = environ["REQUEST_METHOD"]
+        self.path: str = environ["PATH_INFO"]
+        self.query: dict = self._flatten(
             parse_qs(environ.get("QUERY_STRING", ""), keep_blank_values=True)
         )
-        self.form = self._parse_form(environ)
-        self.cookies = self._parse_cookies(environ)
+        self.form: dict = self._parse_form(environ)
+        self.cookies: dict = self._parse_cookies(environ)
+        self.user: sqlite3.Row | None = None
 
     @staticmethod
     def _flatten(d: dict) -> dict:

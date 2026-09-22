@@ -1,9 +1,53 @@
 from camagru.lib.request import Request
-from camagru.lib.response import response
+from camagru.lib.response import redirect, response
 from camagru.lib.template import page
+from camagru.services.auth import register, confirm_account
+from camagru.services.errors import ValidationError
 
 
-def register(request: Request) -> tuple[str, list, bytes]:
+def register_form(request: Request) -> tuple[str, list, bytes]:
     return response(
-        page("register.html", "Camagru - Register")
+        page(
+            "register.html",
+            "Camagru - Register",
+            user=request.user,
+            errors=""
+        )
     )
+
+
+def register_submit(request: Request) -> tuple[str, list, bytes]:
+    try:
+        register(
+            request.form.get("username", ""),
+            request.form.get("email", ""),
+            request.form.get("password", "")
+        )
+    
+    except ValidationError as e:
+        return response(
+            page(
+                "register.html",
+                "Camagru - Register",
+                user=request.user,
+                errors=str(e)
+            )
+        )
+
+    return redirect("/login")
+
+
+def register_confirm(request: Request, confirm_token: str) -> tuple[str, list, bytes]:
+    try:
+        confirm_account(confirm_token)
+    except ValidationError as e:
+        return response(
+            page(
+                "register.html",
+                "Camagru - Register",
+                user=request.user,
+                errors=str(e)
+            )
+        )
+
+    return redirect("/login")

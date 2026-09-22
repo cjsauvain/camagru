@@ -32,3 +32,12 @@ article img {
 aside article img {
     margin-bottom: var(--pico-spacing);
 }
+
+
+.errors {
+    color: var(--pico-del-color);
+}
+
+.errors:empty {
+    display: none;
+}

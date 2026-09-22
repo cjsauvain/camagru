@@ -5,5 +5,9 @@ from camagru.lib.template import page
 
 def reset_password(request: Request) -> tuple[str, list, bytes]:
     return response(
-        page("reset-password.html", "Camagru - Reset Password")
+        page(
+            "reset-password.html",
+            "Camagru - Reset Password",
+            user=request.user,
+        )
     )
