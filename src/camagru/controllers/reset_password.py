@@ -17,7 +17,7 @@ def reset_password_form(request: Request, reset_token: str) -> tuple[str, list, 
     )
 
 
-def reset_password_submit(request: Request, reset_token: str):
+def reset_password_submit(request: Request, reset_token: str) -> tuple[str, list, bytes]:
     try:
         new_password = request.form.get("new-password", "")
         confirm_password = request.form.get("confirm-password", "")
@@ -37,4 +37,4 @@ def reset_password_submit(request: Request, reset_token: str):
             )
         )
 
-    return redirect("/profile")
+    return redirect("/login")

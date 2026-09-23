@@ -20,3 +20,7 @@ def find(conn: sqlite3.Connection, session_id: str) -> sqlite3.Row | None:
 
 def delete(conn: sqlite3.Connection, session_id: str) -> None:
     conn.execute("DELETE FROM sessions WHERE id = ?", (session_id,))
+
+
+def delete_for_user(conn: sqlite3.Connection, user_id: int) -> None:
+    conn.execute("DELETE FROM sessions WHERE user_id = ?", (user_id,))

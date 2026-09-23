@@ -1,16 +1,18 @@
 from camagru.lib.request import Request
-from camagru.lib.response import redirect, response
+from camagru.lib.response import response
 from camagru.lib.template import page
 from camagru.services.errors import ValidationError
 from camagru.services.auth import request_password_reset
 
 
-def forgot_password_from(request: Request) -> tuple[str, list, bytes]:
+def forgot_password_form(request: Request) -> tuple[str, list, bytes]:
     return response(
         page(
             "forgot-password.html",
             "Camagru - Forgot Password",
-            user=request.user
+            user=request.user,
+            errors="",
+            message=""
         )
     )
 
@@ -25,8 +27,17 @@ def forgot_password_submit(request: Request) -> tuple[str, list, bytes]:
                 "forgot-password.html",
                 "Camagru - Forgot Password",
                 user=request.user,
-                errors=str(e)
+                errors=str(e),
+                message=""
             )
         )
 
-    return redirect("/forgot-password")
+    return response(
+        page(
+            "forgot-password.html",
+            "Camagru - Forgot Password",
+            user=request.user,
+            errors="",
+            message="If this email is registered, a reset link has been sent."
+        )
+    )

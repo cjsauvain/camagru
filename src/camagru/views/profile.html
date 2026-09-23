@@ -1,15 +1,16 @@
 <h1>Profile</h1>
+<p class="errors" role="alert">$errors</p>
 <article>
     <form action="/profile/username" method="post">
         <label for="username">Username</label>
-        <input type="text" id="username" name="username" value="USERNAME PLACEHOLDER (DELETE FROM HTML)" required>
+        <input type="text" id="username" name="username" value="$username" required>
         <button type="submit">Update</button>
     </form>
 </article>
 <article>
     <form action="/profile/email" method="post">
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" value="EMAIL PLACEHOLDER (DELETE FROM HTML)" required>
+        <input type="email" id="email" name="email" value="$email" required>
         <button type="submit">Update</button>
     </form>
 </article>
@@ -33,7 +34,7 @@
             <label for="notification">
                 Notify me when someone comments my photos.
             </label>
-            <input type="checkbox" id="notification" name="notify_on_comments" checked>
+            <input type="checkbox" id="notification" name="notify_on_comment" $checked>
         </fieldset>
         <button type="submit">Save</button>
     </form>

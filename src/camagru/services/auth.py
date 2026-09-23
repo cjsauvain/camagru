@@ -46,6 +46,7 @@ def _validate_params(username: str, email: str, password: str) -> None:
 def register(username: str, email: str, password: str) -> int:
     _validate_params(username, email, password)
 
+    confirm_token = generate_token()
     conn = get_connection()
     try:
         if find_by_username(conn, username):
@@ -53,7 +54,6 @@ def register(username: str, email: str, password: str) -> int:
         if find_by_email(conn, email):
             raise ValidationError("This email is already registered.")
 
-        confirm_token = generate_token()
         user_id = create(conn, username, email, hash_password(password), confirm_token)
         conn.commit()
 
@@ -144,27 +144,28 @@ def request_password_reset(email: str) -> None:
     conn = get_connection()
     try:
         user = find_by_email(conn, email)
-        if user is not None:
-            reset_token = generate_token()
-            set_reset_token(conn, user["id"], reset_token, RESET_TOKEN_LIFETIME)
-            conn.commit()
-
+        if user is None:
+            return
+        reset_token = generate_token()
+        set_reset_token(conn, user["id"], reset_token, RESET_TOKEN_LIFETIME)
+        conn.commit()
     finally:
         conn.close()
 
-    if user is not None:
-        app_url = os.environ.get("APP_URL", "http://localhost:8080")
-        reset_url = f"{app_url}/reset-password/{reset_token}"
-        send_mail(email, "Password Reset", f"Reset your password: {reset_url}")
+    app_url = os.environ.get("APP_URL", "http://localhost:8080")
+    reset_url = f"{app_url}/reset-password/{reset_token}"
+    send_mail(email, "Password Reset", f"Reset your password: {reset_url}")
 
 
-def reset_password(reset_token: str, new_password: str):
+def reset_password(reset_token: str, new_password: str) -> None:
+    _validate_password(new_password)
     conn = get_connection()
     try:
         user = find_by_reset_token(conn, reset_token)
         if user is None:
             raise ValidationError("This reset link is invalid or has expired.")
         set_password(conn, user["id"], hash_password(password=new_password))
+        session.delete_for_user(conn, user["id"])
         conn.commit()
 
     finally:
