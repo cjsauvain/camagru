@@ -219,15 +219,15 @@ final. Les ajustements viendront à l'étape 10, quand les pages seront réellem
 
 ## Étape 3 — Authentification
 
-**Estimation : 8–12 h** — la plus grosse étape fonctionnelle du projet
+**Estimation : 8–12 h** — ✅ terminée — la plus grosse étape fonctionnelle du projet
 - Inscription (email, username, mdp avec complexité minimale)
 - Hash de mot de passe : `hashlib.pbkdf2_hmac('sha256', ...)`, sel aléatoire par utilisateur
   (`secrets.token_bytes`), nombre d'itérations élevé (recommandation OWASP : 600 000),
   comparaison avec `hmac.compare_digest`
   - « Maison » = assembler ces primitives, pas inventer un algorithme : un `sha256(sel + mdp)` est un
     choix faible, facile à attaquer en soutenance
-- ⏳ **`generate_token()` reste à écrire dans `lib/security.py`** — volontairement reporté au moment
-  où il servira. Une ligne, `secrets.token_urlsafe(32)`, mais **trois usages** :
+- ✅ **`generate_token()` écrit dans `lib/security.py`** — une ligne, `secrets.token_urlsafe(32)`,
+  mais **trois usages** :
   - le jeton de confirmation de compte *(étape 3)*
   - l'identifiant de session posé dans le cookie *(étape 3)*
   - le jeton de réinitialisation du mot de passe *(étape 4)*
@@ -395,7 +395,7 @@ pages réellement remplies :
 | 1 | Schéma de base de données | 2–3 h ✅ |
 | 1.5 | Maquette HTML/CSS de tout le site | 3–4 h ✅ |
 | 2 | Routing HTTP et rendu des vues | 7–11 h ✅ |
-| 3 | Authentification | 8–12 h |
+| 3 | Authentification | 8–12 h ✅ |
 | 4 | Reset password + profil | 4–6 h |
 | 5 | Sécurité transverse | 3–5 h |
 | 6 | Webcam, capture et upload | 6–10 h |
@@ -406,8 +406,8 @@ pages réellement remplies :
 | 11 | Containerisation finale | 2–3 h |
 | 12 | Tests et debug transverse | 5–10 h |
 | | **Total** | **57–92 h** |
-| | dont déjà fait | 20–31 h |
-| | **Restant** | **37–61 h** |
+| | dont déjà fait | 28–43 h |
+| | **Restant** | **29–49 h** |
 
 *L'ajout de l'étape 1.5 ne change pas le restant : l'essentiel du CSS y est simplement déplacé
 depuis l'étape 10, qui passe de 3–5 h à 1–2 h.*
