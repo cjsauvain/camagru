@@ -13,20 +13,18 @@ from camagru.models.user import (
     find_by_confirm_token,
     find_by_email,
     find_by_id,
+    find_by_reset_token,
     find_by_username,
+    set_password,
+    set_reset_token
 )
 
 
 SESSION_LIFETIME = 86400
+RESET_TOKEN_LIFETIME = 3600
 
 
-def _validate_params(username: str, email: str, password: str) -> None:
-    if not username or len(username) < 3:
-        raise ValidationError("Username must be at least 3 characters long.")
-
-    if "@" not in email or "." not in email:
-        raise ValidationError("Please enter a valid email address")
-
+def _validate_password(password: str) -> None:
     if len(password) < 8:
         raise ValidationError("Password must be at least 8 characters long.")
     if not any(c.isalpha() for c in password):
@@ -35,6 +33,14 @@ def _validate_params(username: str, email: str, password: str) -> None:
         raise ValidationError("Password must contain digits.")
     if not any(c in password for c in string.punctuation):
         raise ValidationError("Password must contain special characters.")
+
+
+def _validate_params(username: str, email: str, password: str) -> None:
+    if not username or len(username) < 3:
+        raise ValidationError("Username must be at least 3 characters long.")
+    if "@" not in email or "." not in email:
+        raise ValidationError("Please enter a valid email address")
+    _validate_password(password)
 
 
 def register(username: str, email: str, password: str) -> int:
@@ -128,6 +134,37 @@ def logout_user(session_id: str | None) -> None:
     conn = get_connection()
     try:
         session.delete(conn, session_id)
+        conn.commit()
+
+    finally:
+        conn.close()
+
+
+def request_password_reset(email: str) -> None:
+    conn = get_connection()
+    try:
+        user = find_by_email(conn, email)
+        if user is not None:
+            reset_token = generate_token()
+            set_reset_token(conn, user["id"], reset_token, RESET_TOKEN_LIFETIME)
+            conn.commit()
+
+    finally:
+        conn.close()
+
+    if user is not None:
+        app_url = os.environ.get("APP_URL", "http://localhost:8080")
+        reset_url = f"{app_url}/reset-password/{reset_token}"
+        send_mail(email, "Password Reset", f"Reset your password: {reset_url}")
+
+
+def reset_password(reset_token: str, new_password: str):
+    conn = get_connection()
+    try:
+        user = find_by_reset_token(conn, reset_token)
+        if user is None:
+            raise ValidationError("This reset link is invalid or has expired.")
+        set_password(conn, user["id"], hash_password(password=new_password))
         conn.commit()
 
     finally:
