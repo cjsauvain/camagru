@@ -6,7 +6,13 @@ from camagru.controllers.logout import logout
 from camagru.controllers.register import register_form, register_submit, register_confirm
 from camagru.controllers.forgot_password import forgot_password_form, forgot_password_submit
 from camagru.controllers.reset_password import reset_password_form, reset_password_submit
-from camagru.controllers.profile import profile
+from camagru.controllers.profile import (
+    profile_form,
+    profile_username,
+    profile_email,
+    profile_password,
+    profile_notification
+)
 from camagru.controllers.editor import editor
 from camagru.lib.request import Request
 from camagru.lib.response import not_found
@@ -33,7 +39,11 @@ ROUTES = [
     ("POST", compile_pattern("/forgot-password"), forgot_password_submit),
     ("GET", compile_pattern("/reset-password/<reset_token>"), reset_password_form),
     ("POST", compile_pattern("/reset-password/<reset_token>"), reset_password_submit),
-    ("GET", compile_pattern("/profile"), profile),
+    ("GET", compile_pattern("/profile"), profile_form),
+    ("POST", compile_pattern("/profile/username"), profile_username),
+    ("POST", compile_pattern("/profile/email"), profile_email),
+    ("POST", compile_pattern("/profile/password"), profile_password),
+    ("POST", compile_pattern("/profile/notification"), profile_notification),
     ("GET", compile_pattern("/editor"), editor),
 ]
 

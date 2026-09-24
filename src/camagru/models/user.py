@@ -69,3 +69,24 @@ def set_password(conn: sqlite3.Connection, user_id: int, password_hash: str) -> 
         "UPDATE users SET password = ?, reset_token = NULL, reset_expires_at = NULL WHERE id = ?",
         (password_hash, user_id)
     )
+
+
+def set_username(conn: sqlite3.Connection, user_id: int, username: str) -> None:
+    conn.execute(
+        "UPDATE users SET username = ? WHERE id = ?",
+        (username, user_id)
+    )
+
+
+def set_email(conn: sqlite3.Connection, user_id: int, email: str) -> None:
+    conn.execute(
+        "UPDATE users SET email = ? WHERE id = ?",
+        (email, user_id)
+    )
+
+
+def set_notification(conn: sqlite3.Connection, user_id: int, enabled: bool) -> None:
+    conn.execute(
+        "UPDATE users SET notify_on_comment = ? WHERE id = ?",
+        (enabled, user_id)
+    )

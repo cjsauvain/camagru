@@ -1,6 +1,5 @@
 import os
 import sqlite3
-import string
 
 from camagru.db.connection import get_connection
 from camagru.lib.mail import send_mail
@@ -18,29 +17,21 @@ from camagru.models.user import (
     set_password,
     set_reset_token
 )
+from camagru.services.validators import (
+    validate_email,
+    validate_password,
+    validate_username
+)
 
 
 SESSION_LIFETIME = 86400
 RESET_TOKEN_LIFETIME = 3600
 
 
-def _validate_password(password: str) -> None:
-    if len(password) < 8:
-        raise ValidationError("Password must be at least 8 characters long.")
-    if not any(c.isalpha() for c in password):
-        raise ValidationError("Password must contain letters.")
-    if not any(c.isdigit() for c in password):
-        raise ValidationError("Password must contain digits.")
-    if not any(c in password for c in string.punctuation):
-        raise ValidationError("Password must contain special characters.")
-
-
 def _validate_params(username: str, email: str, password: str) -> None:
-    if not username or len(username) < 3:
-        raise ValidationError("Username must be at least 3 characters long.")
-    if "@" not in email or "." not in email:
-        raise ValidationError("Please enter a valid email address")
-    _validate_password(password)
+    validate_username(username)
+    validate_email(email)
+    validate_password(password)
 
 
 def register(username: str, email: str, password: str) -> int:
@@ -50,7 +41,7 @@ def register(username: str, email: str, password: str) -> int:
     conn = get_connection()
     try:
         if find_by_username(conn, username):
-            raise ValidationError("This username is already registered.")
+            raise ValidationError("This username is not available.")
         if find_by_email(conn, email):
             raise ValidationError("This email is already registered.")
 
@@ -158,7 +149,7 @@ def request_password_reset(email: str) -> None:
 
 
 def reset_password(reset_token: str, new_password: str) -> None:
-    _validate_password(new_password)
+    validate_password(new_password)
     conn = get_connection()
     try:
         user = find_by_reset_token(conn, reset_token)
