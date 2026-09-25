@@ -254,7 +254,7 @@ final. Les ajustements viendront à l'étape 10, quand les pages seront réellem
 
 ## Étape 4 — Reset password + gestion du profil
 
-**Estimation : 4–6 h** — réutilise toute la mécanique de l'étape 3
+**Estimation : 4–6 h** — ✅ terminée — réutilise toute la mécanique de l'étape 3
 - Mail de réinitialisation avec token à expiration, **à usage unique** (invalidé après utilisation)
 - Modification username / email / mot de passe
   - Même règle de complexité du mot de passe qu'à l'inscription, au reset comme à la modification
@@ -396,7 +396,7 @@ pages réellement remplies :
 | 1.5 | Maquette HTML/CSS de tout le site | 3–4 h ✅ |
 | 2 | Routing HTTP et rendu des vues | 7–11 h ✅ |
 | 3 | Authentification | 8–12 h ✅ |
-| 4 | Reset password + profil | 4–6 h |
+| 4 | Reset password + profil | 4–6 h ✅ |
 | 5 | Sécurité transverse | 3–5 h |
 | 6 | Webcam, capture et upload | 6–10 h |
 | 7 | Fusion alpha | 2–3 h |
@@ -406,8 +406,8 @@ pages réellement remplies :
 | 11 | Containerisation finale | 2–3 h |
 | 12 | Tests et debug transverse | 5–10 h |
 | | **Total** | **57–92 h** |
-| | dont déjà fait | 28–43 h |
-| | **Restant** | **29–49 h** |
+| | dont déjà fait | 32–49 h |
+| | **Restant** | **25–43 h** |
 
 *L'ajout de l'étape 1.5 ne change pas le restant : l'essentiel du CSS y est simplement déplacé
 depuis l'étape 10, qui passe de 3–5 h à 1–2 h.*

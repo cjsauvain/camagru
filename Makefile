@@ -9,10 +9,10 @@ down:
 	docker compose down
 
 rmi:
-	docker rmi $(CAMAGRU_IMAGE)
+	docker rmi $(CAMAGRU_IMAGE) -f
 
 rm: down rmi
-	docker compose rm
-	rm ./data/camagru.db
+	docker compose rm -f
+	rm -f ./data/camagru.db
 
 re: rm up
