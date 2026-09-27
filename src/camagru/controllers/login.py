@@ -10,6 +10,7 @@ def login_form(request: Request) -> tuple[str, list, bytes]:
         page(
             "login.html",
             "Camagru - Login",
+            csrf_token=request.csrf_token,
             user=request.user,
             errors="",
         )
@@ -28,6 +29,7 @@ def login_submit(request: Request) -> tuple[str, list, bytes]:
             page(
                 "login.html",
                 "Camagru - Login",
+                csrf_token=request.csrf_token,
                 user=request.user,
                 errors=str(e)
             )

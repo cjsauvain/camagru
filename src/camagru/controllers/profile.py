@@ -12,16 +12,17 @@ from camagru.services.profile import (
 )
 
 
-def _render_profile(user: sqlite3.Row, errors: str = "") -> tuple[str, list, bytes]:
+def _render_profile(user: sqlite3.Row, csrf_token: str, errors: str = "") -> tuple[str, list, bytes]:
     return response(
         page(
             "profile.html",
             "Camagru - Profile",
+            csrf_token=csrf_token,
             user=user,
             username=user["username"],
             email=user["email"],
             notification="checked" if user["notify_on_comment"] else "",
-            errors=errors,
+            errors=errors
         )
     )
 
@@ -30,18 +31,18 @@ def profile_form(request: Request) -> tuple[str, list, bytes]:
     if request.user is None:
         return redirect("/login")
 
-    return _render_profile(request.user)
+    return _render_profile(request.user, request.csrf_token)
 
 
 def profile_username(request: Request) -> tuple[str, list, bytes]:
     if request.user is None:
         return redirect("/login")
-
+    
     try:
         update_username(request.user["id"], request.form.get("username", ""))
 
     except ValidationError as e:
-        return _render_profile(request.user, errors=str(e))
+        return _render_profile(request.user, request.csrf_token, errors=str(e))
 
     return redirect("/profile")
 
@@ -54,7 +55,7 @@ def profile_email(request: Request) -> tuple[str, list, bytes]:
         update_email(request.user["id"], request.form.get("email", ""))
 
     except ValidationError as e:
-        return _render_profile(request.user, errors=str(e))
+        return _render_profile(request.user, request.csrf_token, errors=str(e))
 
     return redirect("/profile")
 
@@ -75,7 +76,7 @@ def profile_password(request: Request) -> tuple[str, list, bytes]:
             new_password,        )
 
     except ValidationError as e:
-        return _render_profile(request.user, errors=str(e))
+        return _render_profile(request.user, request.csrf_token, errors=str(e))
 
     return redirect("/profile")
 
@@ -90,6 +91,6 @@ def profile_notification(request: Request) -> tuple[str, list, bytes]:
         )
 
     except ValidationError as e:
-        return _render_profile(request.user, errors=str(e))
+        return _render_profile(request.user, request.csrf_token, errors=str(e))
 
     return redirect("/profile")

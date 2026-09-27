@@ -10,6 +10,7 @@ def register_form(request: Request) -> tuple[str, list, bytes]:
         page(
             "register.html",
             "Camagru - Register",
+            csrf_token=request.csrf_token,
             user=request.user,
             errors=""
         )
@@ -29,6 +30,7 @@ def register_submit(request: Request) -> tuple[str, list, bytes]:
             page(
                 "register.html",
                 "Camagru - Register",
+                csrf_token=request.csrf_token,
                 user=request.user,
                 errors=str(e)
             )
@@ -45,6 +47,7 @@ def register_confirm(request: Request, confirm_token: str) -> tuple[str, list, b
             page(
                 "register.html",
                 "Camagru - Register",
+                csrf_token=request.csrf_token,
                 user=request.user,
                 errors=str(e)
             )

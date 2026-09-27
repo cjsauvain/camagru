@@ -8,6 +8,7 @@ def gallery(request: Request) -> tuple[str, list, bytes]:
         page(
             "gallery.html",
             "Camagru - Gallery",
+            csrf_token=request.csrf_token,
             user=request.user
         ),
     )

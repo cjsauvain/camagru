@@ -3,6 +3,8 @@ import sqlite3
 from urllib.parse import parse_qs
 from wsgiref.types import WSGIEnvironment
 
+from camagru.lib.security import generate_token
+
 SIZE_MAX = 2_000_000
 
 
@@ -15,6 +17,7 @@ class Request:
         )
         self.form: dict = self._parse_form(environ)
         self.cookies: dict = self._parse_cookies(environ)
+        self.csrf_token: str = self.cookies.get("csrf") or generate_token()
         self.user: sqlite3.Row | None = None
 
     @staticmethod

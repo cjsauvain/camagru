@@ -26,5 +26,9 @@ def verify_password(password: str, password_hash: str) -> bool:
     return hmac.compare_digest(check_hash, password_hash)
 
 
+def verify_csrf(submitted: str, expected: str) -> bool:
+    return hmac.compare_digest(submitted.encode(), expected.encode())
+
+
 def generate_token() -> str:
     return secrets.token_urlsafe(32)

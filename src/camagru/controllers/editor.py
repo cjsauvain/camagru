@@ -10,7 +10,8 @@ def editor(request: Request) -> tuple[str, list, bytes]:
     return response(
         page(
             "editor.html",
-            "Camagru - Take a photo",
+            "Camagru - Edit",
+            csrf_token=request.csrf_token,
             user=request.user
         )
     )

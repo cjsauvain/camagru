@@ -10,9 +10,10 @@ def forgot_password_form(request: Request) -> tuple[str, list, bytes]:
         page(
             "forgot-password.html",
             "Camagru - Forgot Password",
+            csrf_token=request.csrf_token,
             user=request.user,
             errors="",
-            message=""
+            message="",
         )
     )
 
@@ -26,6 +27,7 @@ def forgot_password_submit(request: Request) -> tuple[str, list, bytes]:
             page(
                 "forgot-password.html",
                 "Camagru - Forgot Password",
+                csrf_token=request.csrf_token,
                 user=request.user,
                 errors=str(e),
                 message=""
@@ -36,6 +38,7 @@ def forgot_password_submit(request: Request) -> tuple[str, list, bytes]:
         page(
             "forgot-password.html",
             "Camagru - Forgot Password",
+            csrf_token=request.csrf_token,
             user=request.user,
             errors="",
             message="If this email is registered, a reset link has been sent."

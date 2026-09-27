@@ -2,6 +2,8 @@
 <p class="errors" role="alert">$errors</p>
 <article>
     <form action="/profile/username" method="post">
+        <input type="hidden" name="csrf_token" value="$csrf_token">
+
         <label for="username">Username</label>
         <input type="text" id="username" name="username" value="$username" required>
         <button type="submit">Update</button>
@@ -9,6 +11,8 @@
 </article>
 <article>
     <form action="/profile/email" method="post">
+        <input type="hidden" name="csrf_token" value="$csrf_token">
+
         <label for="email">Email</label>
         <input type="email" id="email" name="email" value="$email" required>
         <button type="submit">Update</button>
@@ -16,6 +20,8 @@
 </article>
 <article>
     <form action="/profile/password" method="post">
+        <input type="hidden" name="csrf_token" value="$csrf_token">
+
         <label for="current-password">Current Password</label>
         <input type="password" id="current-password" name="current-password" required>
 
@@ -30,6 +36,8 @@
 </article>
 <article>
     <form action="/profile/notification" method="post">
+        <input type="hidden" name="csrf_token" value="$csrf_token">
+
         <fieldset>
             <label for="notification">
                 Notify me when someone comments my photos.

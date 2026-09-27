@@ -25,7 +25,11 @@ def response(
 
 
 def not_found() -> tuple[str, list, bytes]:
-    return response(page("404.html", "Camagru - Not Found"), status="404 Not Found")
+    return response(page("404.html", "Camagru - Not Found", ""), status="404 Not Found")
+
+
+def forbidden() -> tuple[str, list, bytes]:
+    return response(page("403.html", "Camagru - Forbidden", ""), status="403 Forbidden")
 
 
 def redirect(location: str, headers: list | None = None) -> tuple[str, list, bytes]:
@@ -34,7 +38,7 @@ def redirect(location: str, headers: list | None = None) -> tuple[str, list, byt
 
 def server_error() -> tuple[str, list, bytes]:
     return response(
-        page("500.html", "Camagru - Internal Server Error"),
+        page("500.html", "Camagru - Internal Server Error", ""),
         status="500 Internal Server Error",
     )
 

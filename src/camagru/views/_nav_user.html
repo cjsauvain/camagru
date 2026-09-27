@@ -1,9 +1,11 @@
 <ul>
     <li><a href="/gallery">Gallery</a></li>
-    <li><a href="/editor">Take a photo</a></li>
+    <li><a href="/editor">Edit</a></li>
     <li><a href="/profile">Profile</a></li>
     <li>
         <form action="/logout" method="post">
+            <input type="hidden" name="csrf_token" value="$csrf_token">
+
             <button type="submit">Logout</button>
         </form>
     </li>

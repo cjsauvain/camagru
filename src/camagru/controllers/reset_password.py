@@ -1,4 +1,4 @@
-
+from urllib.parse import quote
 from camagru.lib.request import Request
 from camagru.lib.response import redirect, response
 from camagru.lib.template import page
@@ -11,7 +11,9 @@ def reset_password_form(request: Request, reset_token: str) -> tuple[str, list, 
         page(
             "reset-password.html",
             "Camagru - Reset Password",
-            user=request.user, reset_token=reset_token,
+            csrf_token=request.csrf_token,
+            user=request.user,
+            reset_token=quote(reset_token, safe=""),
             errors=""
         )
     )
@@ -32,6 +34,7 @@ def reset_password_submit(request: Request, reset_token: str) -> tuple[str, list
             page(
                 "reset-password.html",
                 "Camagru - Reset Password",
+                csrf_token=request.csrf_token,
                 user=request.user, reset_token=reset_token,
                 errors=str(e)
             )
