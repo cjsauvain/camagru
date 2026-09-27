@@ -265,14 +265,22 @@ final. Les ajustements viendront à l'étape 10, quand les pages seront réellem
 
 ## Étape 5 — Sécurité transverse (en continu)
 
-**Estimation : 3–5 h**, réparties sur les étapes 3 à 8 plutôt qu'en bloc
-- Protection CSRF sur tous les formulaires
-- **Validation côté serveur de tous les formulaires** (sujet : « All your forms should have correct validations »)
+**Estimation : 3–5 h** — 🚧 environ 2 h 30 faites, réparties sur les étapes 3 à 8 plutôt qu'en bloc
+- ✅ **Protection CSRF sur tous les formulaires** — *double submit cookie* : jeton dans un cookie
+  `csrf`, recopié dans un champ caché de chacun des 9 formulaires, comparé dans `app()` sur
+  **tout** POST avant le routage. Une seule vérification, aucune liste d'exceptions.
+  - Le jeton de la route de capture voyagera dans l'en-tête `X-CSRF-Token`, son corps étant
+    occupé par les pixels → une source supplémentaire à accepter dans `app()` *(étape 6)*
+- ✅ **Validation côté serveur de tous les formulaires** (sujet : « All your forms should have correct validations »)
+  — centralisée dans `services/validators.py`, partagée par l'inscription, le reset et le profil
   - Les attributs HTML5 (`required`, `type="email"`, `minlength`) ne sont qu'un confort : contournables en une requête
-- **Injection SQL** : placeholders `?` dans **toutes** les requêtes, jamais de f-string ni de concaténation dans du SQL
-- Échappement des sorties (anti-XSS) → déjà garanti par défaut par `render()` (étape 2) ;
-  ici : auditer chaque usage de `raw` + les contextes URL (`href`/`src`) et JS que `html.escape` ne couvre pas
-- **Uploads : le serveur ne reçoit que des pixels bruts** (cf. étapes 0.5 et 6). Vérifications, dans l'ordre :
+- ✅ **Injection SQL** : placeholders `?` dans **toutes** les requêtes, jamais de f-string ni de concaténation dans du SQL
+  — audité, les 18 requêtes du projet sont paramétrées ; les seules non paramétrées sont des `PRAGMA` constants
+- ✅ Échappement des sorties (anti-XSS) → déjà garanti par défaut par `render()` (étape 2) ;
+  audit fait : `raw` n'apparaît que dans `page()`, sur du HTML déjà produit par `render()`. Seul contexte
+  non textuel du projet, `$reset_token` dans un `action=` → traité par `urllib.parse.quote(..., safe="")`
+- ⏳ **Uploads : le serveur ne reçoit que des pixels bruts** (cf. étapes 0.5 et 6) — *à faire avec la route
+  de capture, étape 6*. Vérifications, dans l'ordre :
   1. session valide + token CSRF
   2. `CONTENT_LENGTH` est un entier égal à **exactement** 640 × 480 × 4 = 1 228 800,
      vérifié **avant** de lire le corps (sinon un corps de plusieurs Go sature la mémoire)
@@ -285,7 +293,12 @@ final. Les ajustements viendront à l'étape 10, quand les pages seront réellem
   - Aucun octet reçu n'est décodé ni stocké tel quel : l'image finale est toujours produite par l'encodeur maison.
     C'est l'argument à donner en soutenance.
   - Le `Content-Type` et l'extension envoyés par le client ne valent rien comme validation
-- Contrôle d'accès (chaque utilisateur n'agit que sur ses propres données)
+- 🚧 Contrôle d'accès (chaque utilisateur n'agit que sur ses propres données)
+  - ✅ *garde d'authentification* : `if request.user is None` sur les 5 handlers du profil et l'éditeur.
+    Les actions du profil écrivent toutes sur `request.user["id"]`, issu du cookie de session — aucun
+    identifiant de cible n'est exprimable par le client, donc rien à falsifier
+  - ⏳ *contrôle de propriété* : dès qu'une route prendra sa cible dans l'URL (`/images/<id>/delete`),
+    il faudra vérifier `image["user_id"] == request.user["id"]` *(étape 8)*
 - **Notions** : tokens CSRF, requêtes paramétrées, échappement HTML, validation d'un corps de requête binaire, path traversal
 
 ## Étape 6 — Webcam, capture et upload
@@ -305,21 +318,53 @@ final. Les ajustements viendront à l'étape 10, quand les pages seront réellem
   - corps = les pixels bruts ; token CSRF dans un en-tête ; identifiant du calque en paramètre
   - en cas de succès, `location.reload()` : la section latérale est re-rendue par le serveur
   - utiliser `fetch()` ici ne revient pas à faire le bonus AJAX
-- ⚠️ **Prérequis laissé de côté à l'étape 2** : `lib/request.py` ne lit le corps de la requête
-  que lorsque le `Content-Type` est celui d'un formulaire. Les pixels bruts arrivent en
-  `application/octet-stream` et **ne sont donc accessibles nulle part** : le controller reçoit
-  `request`, pas `environ`.
-  - À faire avant d'écrire la route de capture : ajouter `self.body` à `Request` —
-    `_read_body()` lit le flux une fois (avec le plafond `SIZE_MAX`), et `_parse_form()`
-    travaille ensuite sur `self.body` au lieu d'ouvrir le flux lui-même.
-  - Un seul endroit lit `wsgi.input`, ce qui garantit qu'il n'est jamais consommé deux fois.
-  - Le controller pourra alors écrire `if len(request.body) != 1_228_800: → refuser`.
+- ✅ **Prérequis laissé de côté à l'étape 2 — fait.** `lib/request.py` ne lisait le corps que pour un
+  `Content-Type` de formulaire ; les pixels bruts, en `application/octet-stream`, n'étaient accessibles
+  nulle part puisque le controller reçoit `request` et pas `environ`.
+  - `_read_body()` lit désormais `wsgi.input` **une seule fois**, inconditionnellement, avec le plafond
+    `SIZE_MAX`, et range les octets dans `request.body`. `_parse_form()` travaille sur `self.body` et
+    conserve son test de `Content-Type` : un corps binaire ne part jamais dans `parse_qs`.
+  - Un seul endroit consomme le flux, qui ne se lit qu'une fois — une seconde lecture renverrait du vide.
+  - Le controller pourra écrire `if len(request.body) != 1_228_800: → refuser`.
+- ✅ **Calques prêts** : trois PNG 640×480 RGBA dans `static/overlays/`, décodés au démarrage par
+  `lib/overlays.py`. `OVERLAY_FILES` sert de liste blanche *(cf. vérification 4 de l'étape 5)*.
 - **Notions** : `navigator.mediaDevices.getUserMedia`, `ctx.drawImage` / `ctx.getImageData`,
   `URL.createObjectURL`, `fetch` avec un corps binaire
 
+### Ordre conseillé à l'intérieur de l'étape 6
+
+**La preview webcam d'abord**, alors même qu'elle ne débloque rien côté serveur : c'est la seule pièce
+du projet dont le fonctionnement dépend de la machine. WSL2, caméra USB externe, permission du
+navigateur, *secure context* — autant le vérifier en 30 minutes plutôt qu'après avoir écrit tout le
+serveur. Rappel : `getUserMedia()` n'est autorisé que sur `http://localhost`, jamais sur une IP.
+
+Le reste suit la règle inverse : **tout le serveur avant le JavaScript de capture**, pour qu'un échec
+à la dernière étape soit forcément dans le navigateur.
+
+| | Tâche | Estimation |
+|---|---|---|
+| 1 | **Preview webcam seule** — `<video>` + `getUserMedia()`, avec un `.catch()` qui laisse l'upload de fichier utilisable | 0,5–1 h |
+| 2 | **Fusion alpha** *(= étape 7, faite ici en pratique)* — testable hors HTTP : fausse photo unie + vrai calque → `encode()` → ouvrir le PNG | 2–3 h |
+| 3 | **Route de capture serveur** — `POST /images`, les 6 vérifications de l'étape 5, stockage dans `data/`, `INSERT`, plus `GET /images/<id>` en `image/png`. Testable au `curl` avec 1 228 800 octets bidon | 2–3 h |
+| 4 | **JS de capture** — canvas 640×480, sélection de calque, bouton inactif tant qu'aucun calque n'est choisi, `getImageData()`, `fetch()` avec `X-CSRF-Token` | 1,5–3 h |
+| 5 | **Upload de fichier** — `URL.createObjectURL()` → même canvas, même POST | 0,5–1 h |
+| 6 | **Section latérale** — miniatures des photos de l'utilisateur, rendues par le serveur | 1–1,5 h |
+| 7 | **Rejet poli des non connectés** + passage de test complet | 0,5 h |
+| | **Total à passer** | **8–13 h** |
+
+La ligne 2 est l'étape 7, déjà budgétée à part : sans elle, l'étape 6 proprement dite reste à **6–10 h**.
+Elle est faite ici parce que la route de capture n'a rien à stocker tant que la fusion n'existe pas.
+
+⚠️ À ne pas oublier au point 3 : `app()` ne lit le jeton CSRF que dans `request.form`. La capture ayant
+un corps binaire, `request.form` sera vide et la route prendra un **403** — il faut accepter aussi
+`environ.get("HTTP_X_CSRF_TOKEN", "")`. Et côté navigateur, le cookie étant `HttpOnly`, le JS ne peut pas
+le lire : le jeton doit venir du HTML, via un `<meta name="csrf-token" content="$csrf_token">` dans `layout.html`.
+
 ## Étape 7 — Fusion alpha (composition serveur)
 
-**Estimation : 2–3 h** — courte, parce que l'étape 0.5 a fait le travail
+**Estimation : 2–3 h** — courte, parce que l'étape 0.5 a fait le travail.
+**Réalisée pendant l'étape 6** (point 2 de son ordre) : la route de capture n'a rien à stocker tant que
+la fusion n'existe pas. Le budget reste compté ici.
 - Superposition photo + calque, faite côté serveur, sur deux tampons 640×480 de même taille
 - Calques déjà décodés au démarrage (étape 0.5)
 - L'alpha de la photo est ignoré : l'image finale est toujours opaque (alpha = 255),
@@ -397,8 +442,8 @@ pages réellement remplies :
 | 2 | Routing HTTP et rendu des vues | 7–11 h ✅ |
 | 3 | Authentification | 8–12 h ✅ |
 | 4 | Reset password + profil | 4–6 h ✅ |
-| 5 | Sécurité transverse | 3–5 h |
-| 6 | Webcam, capture et upload | 6–10 h |
+| 5 | Sécurité transverse | 3–5 h 🚧 |
+| 6 | Webcam, capture et upload | 6–10 h 🚧 |
 | 7 | Fusion alpha | 2–3 h |
 | 8 | Galerie publique | 5–8 h |
 | 9 | Notification email | 1–2 h |
@@ -406,8 +451,12 @@ pages réellement remplies :
 | 11 | Containerisation finale | 2–3 h |
 | 12 | Tests et debug transverse | 5–10 h |
 | | **Total** | **57–92 h** |
-| | dont déjà fait | 32–49 h |
-| | **Restant** | **25–43 h** |
+| | dont terminé — étapes 0 à 4 | 32–49 h |
+| | dont déjà fait sur 5 et 6 | ≈ 3 h 30 |
+| | **Restant** | **≈ 21–39 h** |
+
+*Les 3 h 30 déjà passées sur les étapes 5 et 6 : la protection CSRF (≈ 2 h 30), puis les calques,
+leur décodage au démarrage et le refactor de `request.body` (≈ 1 h).*
 
 *L'ajout de l'étape 1.5 ne change pas le restant : l'essentiel du CSS y est simplement déplacé
 depuis l'étape 10, qui passe de 3–5 h à 1–2 h.*

@@ -2,7 +2,8 @@
 
 <div class="editor">
     <section>
-        <div class="preview"></div>
+        <video class="preview" id="preview" width="640" height="480" autoplay muted playsinline></video>
+        <p id="preview-error" class="errors" role="alert"></p>
 
         <fieldset>
             <legend>Choose an overlay:</legend>
@@ -47,3 +48,5 @@
         </article>
     </aside>
 </div>
+
+<script src="/static/editor.js" defer></script>
