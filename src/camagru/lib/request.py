@@ -15,6 +15,7 @@ class Request:
         self.query: dict = self._flatten(
             parse_qs(environ.get("QUERY_STRING", ""), keep_blank_values=True)
         )
+        self.body: bytes = self._read_body(environ)
         self.form: dict = self._parse_form(environ)
         self.cookies: dict = self._parse_cookies(environ)
         self.csrf_token: str = self.cookies.get("csrf") or generate_token()
@@ -24,19 +25,21 @@ class Request:
     def _flatten(d: dict) -> dict:
         return {k: v[0] for k, v in d.items()}
 
-    def _parse_form(self, environ: WSGIEnvironment) -> dict:
+    def _read_body(self, environ: WSGIEnvironment) -> bytes:
         size = int(environ.get("CONTENT_LENGTH") or 0)
 
         if size == 0 or size > SIZE_MAX:
-            return {}
+            return b""
 
+        return environ["wsgi.input"].read(size)
+
+    def _parse_form(self, environ: WSGIEnvironment) -> dict:
         if not environ.get("CONTENT_TYPE", "").startswith(
             "application/x-www-form-urlencoded"
         ):
             return {}
 
-        text = environ["wsgi.input"].read(size).decode('utf-8')
-        return self._flatten(parse_qs(text, keep_blank_values=True))
+        return self._flatten(parse_qs(self.body.decode('utf-8'), keep_blank_values=True))
 
     def _parse_cookies(self, environ: WSGIEnvironment) -> dict:
         cookie = SimpleCookie(environ.get("HTTP_COOKIE", ""))
