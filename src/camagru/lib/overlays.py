@@ -23,5 +23,5 @@ def load() -> None:
         OVERLAYS[name] = img
 
 
-def get(overlay_id: str) -> png.Image | None:
-    return OVERLAYS.get(overlay_id)
+def get(overlay_name: str) -> png.Image | None:
+    return OVERLAYS.get(overlay_name)
