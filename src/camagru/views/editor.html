@@ -2,6 +2,7 @@
 
 <div class="editor">
     <section id="capture" data-csrf-token="$csrf_token">
+        <canvas id="canvas" width="640" height="480" hidden></canvas>
         <video class="preview" id="preview" width="640" height="480" autoplay muted playsinline></video>
         <p id="preview-error" class="errors" role="alert"></p>
 
@@ -13,7 +14,7 @@
         </fieldset>
 
         <fieldset>
-            <button disabled>Edit</button>
+            <button id="capture-button" type="button" disabled>Edit</button>
         </fieldset>
 
         <label for="upload">Or upload an image</label>
