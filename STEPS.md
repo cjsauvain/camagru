@@ -392,21 +392,30 @@ la fusion n'existe pas. Le budget reste compté ici.
 
 ## Étape 9 — Notification email sur commentaire
 
-**Estimation : 1–2 h** — réutilise `lib/mail.py` de l'étape 3
-- Envoi automatique à l'auteur de l'image
-- Préférence activée par défaut, désactivable (réglage dans le profil, cf. étape 4)
+**Estimation : 1–2 h** — ✅ terminée — réutilise `lib/mail.py` de l'étape 3
+- ✅ Envoi automatique à l'auteur de l'image, après la fermeture de la transaction, et jamais
+  quand il commente sa propre photo
+- ✅ Préférence activée par défaut, désactivable (réglage dans le profil, cf. étape 4)
+- **Une panne SMTP est volontairement avalée** (`except OSError: pass`) : le commentaire est déjà
+  committé, un serveur de mail éteint ne doit pas transformer une requête réussie en 500. C'est
+  l'inverse du mail de confirmation à l'inscription, où l'échec doit être bruyant puisque le compte
+  reste inutilisable sans lui.
+- Le mail est en **texte brut**, donc sans échappement — la même chaîne que la galerie fait passer
+  par `html.escape`. Chaque couche de sortie a le sien.
 - **Notions** : `smtplib`, colonne booléenne de préférence utilisateur
 
 ## Étape 10 — Responsive : finitions
 
-**Estimation : 1–2 h** — l'essentiel du CSS a été fait à l'étape 1.5
+**Estimation : 1–2 h** — ✅ terminée — l'essentiel du CSS avait été fait à l'étape 1.5
 
-Il ne reste ici que les ajustements qui n'étaient pas visibles sur la maquette, une fois les
-pages réellement remplies :
+Les ajustements qui n'étaient pas visibles sur la maquette, une fois les pages réellement remplies :
 
-- Vérifier chaque page à ~400 px de large et corriger ce qui déborde
-- La page d'édition en une seule colonne sur mobile (la webcam au-dessus, les miniatures en dessous)
-- Les listes longues : galerie à 5 images, fil de commentaires
+- ✅ Les sept pages vérifiées à 400 px, aucune barre de défilement horizontale
+- ✅ La page d'édition bascule en une seule colonne sous 768 px (webcam au-dessus, miniatures en dessous)
+- ✅ `height: auto` sur `.preview` — sans lui, le `width: 80%` du CSS écrasait la largeur de l'attribut
+  HTML mais pas la hauteur, et la vidéo s'étirait verticalement sur écran étroit
+- ✅ `overflow-wrap: break-word` sur les commentaires — le validateur autorise 1000 caractères sans
+  imposer d'espaces, et un navigateur ne sait pas couper un mot insécable sans qu'on le lui dise
 - **Notions** : media queries CSS, flexbox
 
 ## Étape 11 — Containerisation finale
@@ -455,16 +464,16 @@ pages réellement remplies :
 | 6 | Webcam, capture et upload | 6–10 h ✅ |
 | 7 | Fusion alpha | 2–3 h ✅ |
 | 8 | Galerie publique | 5–8 h ✅ |
-| 9 | Notification email | 1–2 h |
-| 10 | Responsive : finitions | 1–2 h |
+| 9 | Notification email | 1–2 h ✅ |
+| 10 | Responsive : finitions | 1–2 h ✅ |
 | 11 | Containerisation finale | 2–3 h |
 | 12 | Tests et debug transverse | 5–10 h |
 | | **Total** | **57–92 h** |
-| | dont terminé — étapes 0 à 8 | 48–75 h |
-| | **Restant** | **9–17 h** |
+| | dont terminé — étapes 0 à 10 | 50–79 h |
+| | **Restant** | **7–13 h** |
 
-*Tout le mandatory fonctionnel est couvert. Ce qui reste — notification email, finitions responsive,
-containerisation, tests transverses — est de la finition sur des fonctionnalités qui marchent déjà.*
+*Tout le mandatory est couvert et responsive. Ne restent que la vérification du déploiement en une
+commande et la passe de tests transverses.*
 
 *L'ajout de l'étape 1.5 ne change pas le restant : l'essentiel du CSS y est simplement déplacé
 depuis l'étape 10, qui passe de 3–5 h à 1–2 h.*
