@@ -19,6 +19,7 @@ class Request:
         self.form: dict = self._parse_form(environ)
         self.cookies: dict = self._parse_cookies(environ)
         self.csrf_token: str = self.cookies.get("csrf") or generate_token()
+        self.x_csrf_token: str = environ.get("HTTP_X_CSRF_TOKEN", "")
         self.user: sqlite3.Row | None = None
 
     @staticmethod
@@ -26,9 +27,12 @@ class Request:
         return {k: v[0] for k, v in d.items()}
 
     def _read_body(self, environ: WSGIEnvironment) -> bytes:
-        size = int(environ.get("CONTENT_LENGTH") or 0)
+        try:
+            size = int(environ.get("CONTENT_LENGTH") or 0)
+        except ValueError:
+            size = 0
 
-        if size == 0 or size > SIZE_MAX:
+        if size <= 0 or size > SIZE_MAX:
             return b""
 
         return environ["wsgi.input"].read(size)
@@ -39,7 +43,12 @@ class Request:
         ):
             return {}
 
-        return self._flatten(parse_qs(self.body.decode('utf-8'), keep_blank_values=True))
+        try:
+            decoded_body = self.body.decode('utf-8')
+        except UnicodeDecodeError:
+            return {}
+
+        return self._flatten(parse_qs(decoded_body, keep_blank_values=True))
 
     def _parse_cookies(self, environ: WSGIEnvironment) -> dict:
         cookie = SimpleCookie(environ.get("HTTP_COOKIE", ""))
