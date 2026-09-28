@@ -1,5 +1,4 @@
 import socketserver
-
 import traceback
 from typing import Any
 from collections.abc import Iterable
@@ -32,7 +31,7 @@ def app(environ: WSGIEnvironment, start_response) -> Iterable[bytes]:
             status, headers, body = static(request.path)
 
         elif request.method == "POST" and  not verify_csrf(
-            request.form.get("csrf_token", ""),
+            request.form.get("csrf_token", request.x_csrf_token),
             request.csrf_token
         ):
             status, headers, body = forbidden()
