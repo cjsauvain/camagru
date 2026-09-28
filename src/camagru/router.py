@@ -1,6 +1,7 @@
 import re
 
 from camagru.controllers.gallery import gallery
+from camagru.controllers.image import image_create, image_show
 from camagru.controllers.login import login_form, login_submit
 from camagru.controllers.logout import logout
 from camagru.controllers.register import register_form, register_submit, register_confirm
@@ -45,6 +46,8 @@ ROUTES = [
     ("POST", compile_pattern("/profile/password"), profile_password),
     ("POST", compile_pattern("/profile/notification"), profile_notification),
     ("GET", compile_pattern("/editor"), editor),
+    ("GET", compile_pattern("/images/<image_id>"), image_show),
+    ("POST", compile_pattern("/images"), image_create),
 ]
 
 
