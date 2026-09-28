@@ -1,47 +1,49 @@
-const canvas = document.getElementById('canvas')
-const ctx = canvas.getContext('2d')
-const csrfToken = document.getElementById('capture').dataset.csrfToken
-const video = document.getElementById('preview')
-const button = document.getElementById('capture-button')
-const upload = document.getElementById('upload')
-const uploadPreview = document.getElementById('upload-preview')
-const errorBox = document.getElementById('preview-error')
-let webcamReady = false
-let fileImage = false
+var canvas = document.getElementById('canvas')
+var ctx = canvas.getContext('2d')
+var csrfToken = document.getElementById('capture').dataset.csrfToken
+var video = document.getElementById('preview')
+var button = document.getElementById('capture-button')
+var upload = document.getElementById('upload')
+var uploadPreview = document.getElementById('upload-preview')
+var errorBox = document.getElementById('preview-error')
+var webcamReady = false
+var fileImage = false
 
 
-async function send(pixels, overlay) {
+function send(pixels, overlay) {
     button.disabled = true
     errorBox.textContent = "Processing..."
 
-    try {
-        const res = await fetch('/images?overlay=' + encodeURIComponent(overlay), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/octet-stream',
-                'X-CSRF-Token': csrfToken
-            },
-            body: pixels
-        })
-
+    fetch('/images?overlay=' + encodeURIComponent(overlay), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/octet-stream',
+            'X-CSRF-Token': csrfToken
+        },
+        body: pixels
+    }).then(function (res) {
         if (res.status === 201) {
             location.reload()
             return
         } else if (res.status === 403) {
             errorBox.textContent = "Session expired, please reload the page."
-        } else {
-            errorBox.textContent = await res.text()
+            updateButton()
+            return
         }
-    } catch (err) {
+        return res.text().then(function (text) {
+            errorBox.textContent = text
+            updateButton()
+        })
+    }).catch(function () {
         errorBox.textContent = "Network error, please try again."
-    }
+        updateButton()
+    })
 
-    updateButton()
 }
 
 
 function selectedOverlay() {
-    const checked = document.querySelector('input[name="overlay"]:checked')
+    var checked = document.querySelector('input[name="overlay"]:checked')
     return checked ? checked.value : null
 }
 
@@ -57,24 +59,30 @@ navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } })
         video.hidden = true
         errorBox.textContent = "Webcam unavailable. You can still upload a picture below."
     })
-document.querySelectorAll('input[name="overlay"]').forEach(function (radio) {
-    radio.addEventListener('change', updateButton)
-})
+
+var radios = document.querySelectorAll('input[name="overlay"]')
+for (var i = 0; i < radios.length; i++) {
+    radios[i].addEventListener('change', updateButton)
+}
+
 video.addEventListener('playing', function () {
     webcamReady = true
     updateButton()
 })
+
 button.addEventListener('click', function () {
-    const source = fileImage ? uploadPreview : video
+    var source = fileImage ? uploadPreview : video
     ctx.drawImage(source, 0, 0, 640, 480)
-    const pixels = ctx.getImageData(0, 0, 640, 480).data
+    var pixels = ctx.getImageData(0, 0, 640, 480).data
     send(pixels, selectedOverlay())
 })
+
 upload.addEventListener('change', function () {
-    const file = upload.files[0]
+    var file = upload.files[0]
     if (!file) return
     uploadPreview.src = URL.createObjectURL(file)
 })
+
 uploadPreview.addEventListener('load', function() {
     uploadPreview.hidden = false
     video.hidden = true
@@ -82,6 +90,7 @@ uploadPreview.addEventListener('load', function() {
     errorBox.textContent = ""
     updateButton()
 })
+
 uploadPreview.addEventListener('error', function() {
     uploadPreview.hidden = true
     video.hidden = !webcamReady
