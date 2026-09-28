@@ -265,7 +265,7 @@ final. Les ajustements viendront à l'étape 10, quand les pages seront réellem
 
 ## Étape 5 — Sécurité transverse (en continu)
 
-**Estimation : 3–5 h** — 🚧 environ 2 h 30 faites, réparties sur les étapes 3 à 8 plutôt qu'en bloc
+**Estimation : 3–5 h** — 🚧 quasi terminée ; ne reste que le contrôle de propriété, rattaché à l'étape 8
 - ✅ **Protection CSRF sur tous les formulaires** — *double submit cookie* : jeton dans un cookie
   `csrf`, recopié dans un champ caché de chacun des 9 formulaires, comparé dans `app()` sur
   **tout** POST avant le routage. Une seule vérification, aucune liste d'exceptions.
@@ -279,8 +279,8 @@ final. Les ajustements viendront à l'étape 10, quand les pages seront réellem
 - ✅ Échappement des sorties (anti-XSS) → déjà garanti par défaut par `render()` (étape 2) ;
   audit fait : `raw` n'apparaît que dans `page()`, sur du HTML déjà produit par `render()`. Seul contexte
   non textuel du projet, `$reset_token` dans un `action=` → traité par `urllib.parse.quote(..., safe="")`
-- ⏳ **Uploads : le serveur ne reçoit que des pixels bruts** (cf. étapes 0.5 et 6) — *à faire avec la route
-  de capture, étape 6*. Vérifications, dans l'ordre :
+- ✅ **Uploads : le serveur ne reçoit que des pixels bruts** (cf. étapes 0.5 et 6) — les six vérifications
+  sont en place dans `POST /images` et testées. Dans l'ordre :
   1. session valide + token CSRF
   2. `CONTENT_LENGTH` est un entier égal à **exactement** 640 × 480 × 4 = 1 228 800,
      vérifié **avant** de lire le corps (sinon un corps de plusieurs Go sature la mémoire)
@@ -303,7 +303,7 @@ final. Les ajustements viendront à l'étape 10, quand les pages seront réellem
 
 ## Étape 6 — Webcam, capture et upload
 
-**Estimation : 6–10 h** — le gros du JavaScript du projet
+**Estimation : 6–10 h** — ✅ terminée — le gros du JavaScript du projet
 - Page réservée aux utilisateurs connectés : un visiteur non connecté est **redirigé poliment**
   vers la page de login, avec un message
 - **Section principale** :
@@ -350,7 +350,7 @@ Le reste suit la règle inverse : **tout le serveur avant le JavaScript de captu
 | 5 | **Upload de fichier** — `URL.createObjectURL()` → même canvas, même POST | 0,5–1 h |
 | 6 | **Section latérale** — miniatures des photos de l'utilisateur, rendues par le serveur | 1–1,5 h |
 | 7 | **Rejet poli des non connectés** + passage de test complet | 0,5 h |
-| | **Total à passer** | **8–13 h** |
+| | **Total à passer** | **8–13 h** ✅ |
 
 La ligne 2 est l'étape 7, déjà budgétée à part : sans elle, l'étape 6 proprement dite reste à **6–10 h**.
 Elle est faite ici parce que la route de capture n'a rien à stocker tant que la fusion n'existe pas.
@@ -362,9 +362,11 @@ le lire : le jeton doit venir du HTML, via un `<meta name="csrf-token" content="
 
 ## Étape 7 — Fusion alpha (composition serveur)
 
-**Estimation : 2–3 h** — courte, parce que l'étape 0.5 a fait le travail.
+**Estimation : 2–3 h** — ✅ terminée — courte, parce que l'étape 0.5 a fait le travail.
 **Réalisée pendant l'étape 6** (point 2 de son ordre) : la route de capture n'a rien à stocker tant que
 la fusion n'existe pas. Le budget reste compté ici.
+- `lib/compose.py` : `blend(photo: bytes, overlay: png.Image) -> png.Image`, 0,10 s pour un 640×480 —
+  moitié moins que l'estimation, l'optimisation sur `a == 0` s'est révélée inutile
 - Superposition photo + calque, faite côté serveur, sur deux tampons 640×480 de même taille
 - Calques déjà décodés au démarrage (étape 0.5)
 - L'alpha de la photo est ignoré : l'image finale est toujours opaque (alpha = 255),
@@ -443,20 +445,21 @@ pages réellement remplies :
 | 3 | Authentification | 8–12 h ✅ |
 | 4 | Reset password + profil | 4–6 h ✅ |
 | 5 | Sécurité transverse | 3–5 h 🚧 |
-| 6 | Webcam, capture et upload | 6–10 h 🚧 |
-| 7 | Fusion alpha | 2–3 h |
+| 6 | Webcam, capture et upload | 6–10 h ✅ |
+| 7 | Fusion alpha | 2–3 h ✅ |
 | 8 | Galerie publique | 5–8 h |
 | 9 | Notification email | 1–2 h |
 | 10 | Responsive : finitions | 1–2 h |
 | 11 | Containerisation finale | 2–3 h |
 | 12 | Tests et debug transverse | 5–10 h |
 | | **Total** | **57–92 h** |
-| | dont terminé — étapes 0 à 4 | 32–49 h |
-| | dont déjà fait sur 5 et 6 | ≈ 3 h 30 |
-| | **Restant** | **≈ 21–39 h** |
+| | dont terminé — étapes 0 à 4, 6 et 7 | 40–62 h |
+| | dont déjà fait sur l'étape 5 | ≈ 3 h |
+| | **Restant** | **≈ 17–30 h** |
 
-*Les 3 h 30 déjà passées sur les étapes 5 et 6 : la protection CSRF (≈ 2 h 30), puis les calques,
-leur décodage au démarrage et le refactor de `request.body` (≈ 1 h).*
+*L'étape 5 est quasi terminée : CSRF, validation serveur, requêtes paramétrées, échappement et les six
+vérifications d'upload sont en place. Ne reste que le contrôle de propriété des images, qui se fera
+naturellement avec la suppression et les likes à l'étape 8.*
 
 *L'ajout de l'étape 1.5 ne change pas le restant : l'essentiel du CSS y est simplement déplacé
 depuis l'étape 10, qui passe de 3–5 h à 1–2 h.*

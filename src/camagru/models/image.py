@@ -21,6 +21,6 @@ def find_by_id(conn: sqlite3.Connection, image_id: int) -> sqlite3.Row | None:
 
 def find_by_user(conn: sqlite3.Connection, user_id: int) -> list[sqlite3.Row]:
     return conn.execute(
-        "SELECT * FROM images WHERE user_id = ? ORDER BY created_at DESC",
+        "SELECT * FROM images WHERE user_id = ? ORDER BY created_at DESC, id DESC",
         (user_id,)
     ).fetchall()

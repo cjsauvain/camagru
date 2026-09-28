@@ -36,11 +36,11 @@ aside article img {
     margin-bottom: var(--pico-spacing);
 }
 
-
 .errors {
     color: var(--pico-del-color);
 }
 
+.message:empty,
 .errors:empty {
     display: none;
 }

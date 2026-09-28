@@ -1,3 +1,4 @@
+
 from camagru.lib.request import Request
 from camagru.lib.response import redirect, response, set_cookie
 from camagru.lib.template import page
@@ -12,6 +13,8 @@ def login_form(request: Request) -> tuple[str, list, bytes]:
             "Camagru - Login",
             csrf_token=request.csrf_token,
             user=request.user,
+            message="Please log in to access the editor."
+                if "required" in request.query else "",
             errors="",
         )
     )
@@ -31,6 +34,7 @@ def login_submit(request: Request) -> tuple[str, list, bytes]:
                 "Camagru - Login",
                 csrf_token=request.csrf_token,
                 user=request.user,
+                message="",
                 errors=str(e)
             )
         )

@@ -24,30 +24,7 @@
 
     <aside>
         <h2>My photos</h2>
-        <article>
-            <img src="/static/demo1.png" alt="Photo taken on September 19">
-            <form action="/images/1/delete" method="post">
-                <input type="hidden" name="csrf_token" value="$csrf_token">
-
-                <button>Delete</button>
-            </form>
-        </article>
-        <article>
-            <img src="/static/demo2.png" alt="Photo taken on September 18">
-            <form action="/images/2/delete" method="post">
-                <input type="hidden" name="csrf_token" value="$csrf_token">
-
-                <button>Delete</button>
-            </form>
-        </article>
-        <article>
-            <img src="/static/demo3.png" alt="Photo taken on September 15">
-            <form action="/images/3/delete" method="post">
-                <input type="hidden" name="csrf_token" value="$csrf_token">
-
-                <button>Delete</button>
-            </form>
-        </article>
+        $photos
     </aside>
 </div>
 

@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 import secrets
+import sqlite3
+from typing import final
 
 from camagru.db.connection import get_connection
 from camagru.lib import overlays, png
@@ -58,3 +60,14 @@ def image_path(image_id: int) -> Path | None:
         conn.close()
 
     return IMAGE_DIR / img["filename"]
+
+
+def list_user_images(user_id: int) -> list[sqlite3.Row]:
+    conn = get_connection()
+    try:
+        images = image.find_by_user(conn, user_id)
+
+    finally:
+        conn.close()
+
+    return images
