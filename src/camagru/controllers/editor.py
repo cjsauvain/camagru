@@ -12,7 +12,7 @@ def editor(request: Request) -> tuple[str, list, bytes]:
     photos = "".join(
         render("_photo.html", image_id=img["id"], created_at=img["created_at"])
         for img in images
-    ) or render("_no_photos.html")
+    ) or render("_editor_empty.html")
     return response(
         page(
             "editor.html",

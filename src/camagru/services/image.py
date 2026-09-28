@@ -1,13 +1,14 @@
+import math
 import os
 from pathlib import Path
 import secrets
 import sqlite3
-from typing import final
 
 from camagru.db.connection import get_connection
 from camagru.lib import overlays, png
 from camagru.lib.compose import blend
 from camagru.models import image
+from camagru.models.image import PER_PAGE
 from camagru.services.errors import ValidationError
 
 PHOTO_SIZE = 1_228_800
@@ -71,3 +72,21 @@ def list_user_images(user_id: int) -> list[sqlite3.Row]:
         conn.close()
 
     return images
+
+
+def list_gallery(page_index: int) -> tuple[list[sqlite3.Row], int]:
+    if page_index < 1:
+        raise ValidationError("Page not found.")
+
+    conn = get_connection()
+    try:
+        page_count = math.ceil(image.count(conn) / PER_PAGE)
+        if page_index > max(page_count, 1):
+            raise ValidationError("Page does not exist.")
+
+        page_images = image.find_page(conn, PER_PAGE, (page_index - 1) * PER_PAGE)
+
+    finally:
+        conn.close()
+    
+    return page_images, page_count
