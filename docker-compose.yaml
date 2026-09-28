@@ -5,7 +5,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./data:/app/data
+      - camagru-data:/app/data
     depends_on:
       - mailpit
 
@@ -13,3 +13,6 @@ services:
     image: axllent/mailpit
     ports:
       - 8081:8025
+
+volumes:
+  camagru-data:
