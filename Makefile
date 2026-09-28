@@ -1,5 +1,3 @@
-CAMAGRU_IMAGE=camagru-app:latest
-
 all: up
 
 up:
@@ -8,11 +6,9 @@ up:
 down:
 	docker compose down
 
-rmi:
-	docker rmi $(CAMAGRU_IMAGE) -f
+fclean:
+	docker compose down -v
 
-rm: down rmi
-	docker compose rm -f
-	rm -f ./data/camagru.db
+re: fclean up
 
-re: rm up
+.PHONY: all up down fclean re

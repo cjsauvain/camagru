@@ -1,4 +1,5 @@
 .venv/
+data/
 .gitignore
 .python-version
 docker-compose.yaml
