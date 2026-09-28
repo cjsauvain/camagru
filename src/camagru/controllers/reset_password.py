@@ -7,6 +7,9 @@ from camagru.services.errors import ValidationError
 
 
 def reset_password_form(request: Request, reset_token: str) -> tuple[str, list, bytes]:
+    if request.user is not None:
+        return redirect("/gallery")
+
     return response(
         page(
             "reset-password.html",

@@ -4,16 +4,18 @@ import sqlite3
 from camagru.lib.request import Request
 from camagru.lib.response import not_found, response
 from camagru.lib.template import page, render
+from camagru.services.comment import list_comments
 from camagru.services.errors import ValidationError
 from camagru.services.image import list_gallery
 
 
 def _card(request: Request, img: sqlite3.Row) -> str:
+    likes = ""
     parts = []
     if request.user:
         parts.append(
             render(
-                "_like_form.html",
+                "_comment_form.html",
                 image_id=img["id"],
                 csrf_token=request.csrf_token
             )
@@ -21,17 +23,30 @@ def _card(request: Request, img: sqlite3.Row) -> str:
         if img["user_id"] == request.user["id"]:
             parts.append(
                 render(
-                    "_delete_form.html",
+                    "_gallery_delete_form.html",
                     image_id=img["id"],
                     csrf_token=request.csrf_token
                 )
             )
-
+        likes = "".join(
+            render(
+                "_like_form.html",
+                image_id=img["id"],
+                csrf_token=request.csrf_token
+            )
+        )
+    comments = "".join(
+        render(
+            "_comment.html",
+            username=c["username"],
+            body=c["body"]
+        ) for c in list_comments(img["id"])
+    )
     actions = "".join(parts)    
 
     return render(
         "_gallery_image.html",
-        raw={"actions": actions},
+        raw={"likes": likes, "comments": comments, "actions": actions},
         image_id=img["id"],
         username=img["username"],
         created_at=img["created_at"],
@@ -52,7 +67,7 @@ def gallery(request: Request) -> tuple[str, list, bytes]:
         raw_content = {"image": cards, "prev": prev_link, "next": next_link}
     
     except ValidationError:
-        return not_found()
+        return not_found(request.user)
 
     return response(
         page(
@@ -60,6 +75,7 @@ def gallery(request: Request) -> tuple[str, list, bytes]:
             "Camagru - Gallery",
             raw=raw_content,
             csrf_token=request.csrf_token,
-            user=request.user
+            user=request.user,
+            message="Your comment was rejected." if "error" in request.query else ""
         ),
     )

@@ -1,6 +1,5 @@
 import sqlite3
 
-from camagru.services.errors import ValidationError
 
 PER_PAGE = 5
 

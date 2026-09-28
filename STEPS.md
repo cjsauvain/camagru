@@ -265,7 +265,7 @@ final. Les ajustements viendront à l'étape 10, quand les pages seront réellem
 
 ## Étape 5 — Sécurité transverse (en continu)
 
-**Estimation : 3–5 h** — 🚧 quasi terminée ; ne reste que le contrôle de propriété, rattaché à l'étape 8
+**Estimation : 3–5 h** — ✅ terminée, répartie sur les étapes 3 à 8 plutôt qu'en bloc
 - ✅ **Protection CSRF sur tous les formulaires** — *double submit cookie* : jeton dans un cookie
   `csrf`, recopié dans un champ caché de chacun des 9 formulaires, comparé dans `app()` sur
   **tout** POST avant le routage. Une seule vérification, aucune liste d'exceptions.
@@ -293,12 +293,13 @@ final. Les ajustements viendront à l'étape 10, quand les pages seront réellem
   - Aucun octet reçu n'est décodé ni stocké tel quel : l'image finale est toujours produite par l'encodeur maison.
     C'est l'argument à donner en soutenance.
   - Le `Content-Type` et l'extension envoyés par le client ne valent rien comme validation
-- 🚧 Contrôle d'accès (chaque utilisateur n'agit que sur ses propres données)
+- ✅ Contrôle d'accès (chaque utilisateur n'agit que sur ses propres données)
   - ✅ *garde d'authentification* : `if request.user is None` sur les 5 handlers du profil et l'éditeur.
     Les actions du profil écrivent toutes sur `request.user["id"]`, issu du cookie de session — aucun
     identifiant de cible n'est exprimable par le client, donc rien à falsifier
-  - ⏳ *contrôle de propriété* : dès qu'une route prendra sa cible dans l'URL (`/images/<id>/delete`),
-    il faudra vérifier `image["user_id"] == request.user["id"]` *(étape 8)*
+  - ✅ *contrôle de propriété* : la suppression prend sa cible dans l'URL, `delete_image()` compare donc
+    `image["user_id"]` à l'utilisateur de la session. Forger l'identifiant dans le formulaire renvoie un
+    403 sans rien toucher *(étape 8)*
 - **Notions** : tokens CSRF, requêtes paramétrées, échappement HTML, validation d'un corps de requête binaire, path traversal
 
 ## Étape 6 — Webcam, capture et upload
@@ -377,10 +378,16 @@ la fusion n'existe pas. Le budget reste compté ici.
 
 ## Étape 8 — Galerie publique
 
-**Estimation : 5–8 h**
-- Liste paginée (≥5 éléments/page), triée par date
-- Likes et commentaires réservés aux utilisateurs connectés
-- Suppression réservée au propriétaire de l'image
+**Estimation : 5–8 h** — ✅ terminée
+- ✅ Liste paginée (5 éléments/page), triée par date — `LIMIT`/`OFFSET` avec un tri **total**
+  (`created_at DESC, id DESC`) : sans départage, deux photos de la même seconde pourraient changer
+  de page entre deux requêtes, donc apparaître deux fois ou pas du tout
+- ✅ Likes et commentaires réservés aux utilisateurs connectés — lecture publique, écriture gardée
+  - le like est une **bascule** : la clé primaire `(image_id, user_id)` interdit le doublon
+  - les commentaires sont stockés **tels quels** et échappés au rendu : l'échappement appartient à la
+    couche d'affichage, pas au stockage
+- ✅ Suppression réservée au propriétaire de l'image — ligne supprimée puis fichier effacé, l'inverse
+  de la création ; likes et commentaires suivent par `ON DELETE CASCADE`
 - **Notions** : pagination SQL (`LIMIT`/`OFFSET`), requêtes agrégées, contrôle d'accès en écriture
 
 ## Étape 9 — Notification email sur commentaire
@@ -444,22 +451,20 @@ pages réellement remplies :
 | 2 | Routing HTTP et rendu des vues | 7–11 h ✅ |
 | 3 | Authentification | 8–12 h ✅ |
 | 4 | Reset password + profil | 4–6 h ✅ |
-| 5 | Sécurité transverse | 3–5 h 🚧 |
+| 5 | Sécurité transverse | 3–5 h ✅ |
 | 6 | Webcam, capture et upload | 6–10 h ✅ |
 | 7 | Fusion alpha | 2–3 h ✅ |
-| 8 | Galerie publique | 5–8 h |
+| 8 | Galerie publique | 5–8 h ✅ |
 | 9 | Notification email | 1–2 h |
 | 10 | Responsive : finitions | 1–2 h |
 | 11 | Containerisation finale | 2–3 h |
 | 12 | Tests et debug transverse | 5–10 h |
 | | **Total** | **57–92 h** |
-| | dont terminé — étapes 0 à 4, 6 et 7 | 40–62 h |
-| | dont déjà fait sur l'étape 5 | ≈ 3 h |
-| | **Restant** | **≈ 17–30 h** |
+| | dont terminé — étapes 0 à 8 | 48–75 h |
+| | **Restant** | **9–17 h** |
 
-*L'étape 5 est quasi terminée : CSRF, validation serveur, requêtes paramétrées, échappement et les six
-vérifications d'upload sont en place. Ne reste que le contrôle de propriété des images, qui se fera
-naturellement avec la suppression et les likes à l'étape 8.*
+*Tout le mandatory fonctionnel est couvert. Ce qui reste — notification email, finitions responsive,
+containerisation, tests transverses — est de la finition sur des fonctionnalités qui marchent déjà.*
 
 *L'ajout de l'étape 1.5 ne change pas le restant : l'essentiel du CSS y est simplement déplacé
 depuis l'étape 10, qui passe de 3–5 h à 1–2 h.*

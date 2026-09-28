@@ -1,11 +1,14 @@
 from camagru.lib.request import Request
-from camagru.lib.response import response
+from camagru.lib.response import redirect, response
 from camagru.lib.template import page
 from camagru.services.errors import ValidationError
 from camagru.services.auth import request_password_reset
 
 
 def forgot_password_form(request: Request) -> tuple[str, list, bytes]:
+    if request.user is not None:
+        return redirect("/gallery")
+
     return response(
         page(
             "forgot-password.html",

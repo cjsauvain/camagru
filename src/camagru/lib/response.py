@@ -1,5 +1,6 @@
 import mimetypes
 from pathlib import Path
+import sqlite3
 
 from camagru.lib.template import page
 
@@ -24,12 +25,12 @@ def response(
     return status, headers, body
 
 
-def not_found() -> tuple[str, list, bytes]:
-    return response(page("404.html", "Camagru - Not Found", ""), status="404 Not Found")
+def not_found(user: sqlite3.Row | None = None) -> tuple[str, list, bytes]:
+    return response(page("404.html", "Camagru - Not Found", "", user=user), status="404 Not Found")
 
 
-def forbidden() -> tuple[str, list, bytes]:
-    return response(page("403.html", "Camagru - Forbidden", ""), status="403 Forbidden")
+def forbidden(user: sqlite3.Row | None = None) -> tuple[str, list, bytes]:
+    return response(page("403.html", "Camagru - Forbidden", "", user=user), status="403 Forbidden")
 
 
 def redirect(location: str, headers: list | None = None) -> tuple[str, list, bytes]:

@@ -6,6 +6,9 @@ from camagru.services.errors import ValidationError
 
 
 def register_form(request: Request) -> tuple[str, list, bytes]:
+    if request.user is not None:
+        return redirect("/gallery")
+
     return response(
         page(
             "register.html",

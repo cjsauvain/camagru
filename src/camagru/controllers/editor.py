@@ -8,7 +8,7 @@ from camagru.services.image import list_user_images
 
 def _photo(request: Request, img: sqlite3.Row) -> str:
     actions = render(
-        "_delete_form.html",
+        "_editor_delete_form.html",
         image_id=img["id"],
         csrf_token=request.csrf_token
     )

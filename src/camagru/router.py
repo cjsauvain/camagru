@@ -1,7 +1,14 @@
 import re
 
 from camagru.controllers.gallery import gallery
-from camagru.controllers.image import image_create, image_delete, image_like, image_show
+from camagru.controllers.image import (
+    editor_image_delete,
+    gallery_image_delete,
+    image_create,
+    image_like,
+    image_show,
+    comment_create
+)
 from camagru.controllers.login import login_form, login_submit
 from camagru.controllers.logout import logout
 from camagru.controllers.register import register_form, register_submit, register_confirm
@@ -48,8 +55,10 @@ ROUTES = [
     ("GET", compile_pattern("/editor"), editor),
     ("GET", compile_pattern("/images/<image_id>"), image_show),
     ("POST", compile_pattern("/images"), image_create),
-    ("POST", compile_pattern("/images/<image_id>/delete"), image_delete),
+    ("POST", compile_pattern("/gallery/<image_id>/delete"), gallery_image_delete),
+    ("POST", compile_pattern("/editor/<image_id>/delete"), editor_image_delete),
     ("POST", compile_pattern("/images/<image_id>/likes"), image_like),
+    ("POST", compile_pattern("/images/<image_id>/comments"), comment_create),
 ]
 
 
@@ -59,4 +68,4 @@ def router(request: Request) -> tuple[str, list, bytes]:
         if match and method == request.method:
             return handler(request, **match.groupdict())
 
-    return not_found()
+    return not_found(request.user)

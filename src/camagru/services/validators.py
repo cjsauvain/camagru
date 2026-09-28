@@ -28,3 +28,10 @@ def validate_password(password: str) -> None:
         raise ValidationError("Password must contain digits.")
     if not any(c in password for c in string.punctuation):
         raise ValidationError("Password must contain special characters.")
+
+
+def validate_comment(body: str) -> None:
+    if body.strip() == "":
+        raise ValidationError("Your comment must not contain only spaces.")
+    if len(body) > 1000:
+        raise ValidationError("Your comment is too long, 1000 characters is the limit.")
