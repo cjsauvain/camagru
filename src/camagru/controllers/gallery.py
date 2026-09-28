@@ -9,15 +9,33 @@ from camagru.services.image import list_gallery
 
 
 def _card(request: Request, img: sqlite3.Row) -> str:
-    actions = render("_delete_form.html", image_id=img["id"], csrf_token=request.csrf_token) \
-        if request.user and img["user_id"] == request.user["id"] else ""
-    
+    parts = []
+    if request.user:
+        parts.append(
+            render(
+                "_like_form.html",
+                image_id=img["id"],
+                csrf_token=request.csrf_token
+            )
+        )
+        if img["user_id"] == request.user["id"]:
+            parts.append(
+                render(
+                    "_delete_form.html",
+                    image_id=img["id"],
+                    csrf_token=request.csrf_token
+                )
+            )
+
+    actions = "".join(parts)    
+
     return render(
         "_gallery_image.html",
         raw={"actions": actions},
         image_id=img["id"],
         username=img["username"],
         created_at=img["created_at"],
+        likes_count=img["likes_count"]
     )
 
 

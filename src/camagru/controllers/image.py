@@ -4,6 +4,7 @@ from camagru.lib.response import forbidden, redirect, response, not_found
 from camagru.lib.request import Request
 from camagru.services.errors import ValidationError
 from camagru.services.image import create_image, delete_image, image_path
+from camagru.services.like import toggle_like
 
 
 def image_create(request: Request) -> tuple[str, list, bytes]:
@@ -59,5 +60,21 @@ def image_delete(request: Request, image_id: str) -> tuple[str, list, bytes]:
 
     except ValidationError:
         return forbidden()
+
+    return redirect("/gallery")
+
+
+def image_like(request: Request, image_id: str):
+    if request.user is None:
+        return redirect("/login?required=1")    
+
+    if re.fullmatch(r"[0-9]{1,18}", image_id) is None:
+        return not_found()
+
+    try:
+        toggle_like(request.user["id"], int(image_id))
+
+    except ValidationError:
+        return not_found()
 
     return redirect("/gallery")
