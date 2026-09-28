@@ -1,9 +1,24 @@
 
+import sqlite3
+
 from camagru.lib.request import Request
 from camagru.lib.response import not_found, response
 from camagru.lib.template import page, render
 from camagru.services.errors import ValidationError
 from camagru.services.image import list_gallery
+
+
+def _card(request: Request, img: sqlite3.Row) -> str:
+    actions = render("_delete_form.html", image_id=img["id"], csrf_token=request.csrf_token) \
+        if request.user and img["user_id"] == request.user["id"] else ""
+    
+    return render(
+        "_gallery_image.html",
+        raw={"actions": actions},
+        image_id=img["id"],
+        username=img["username"],
+        created_at=img["created_at"],
+    )
 
 
 def gallery(request: Request) -> tuple[str, list, bytes]:
@@ -12,11 +27,8 @@ def gallery(request: Request) -> tuple[str, list, bytes]:
 
     try:
         page_images, page_count = list_gallery(page_index)
-        cards = "".join(
-            render("_gallery_image.html", image_id=img["id"],
-                    username=img["username"], created_at=img["created_at"])
-            for img in page_images
-        ) or render("_gallery_empty.html")
+        cards = "".join(_card(request, img) for img in page_images) \
+            or render("_gallery_empty.html")
         prev_link = render("_page_link.html", page=page_index - 1, label="Previous") if page_index > 1 else ""
         next_link = render("_page_link.html", page=page_index + 1, label="Next") if page_index < page_count else ""
         raw_content = {"image": cards, "prev": prev_link, "next": next_link}

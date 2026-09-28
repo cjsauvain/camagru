@@ -50,6 +50,23 @@ def create_image(user_id: int, photo: bytes, overlay_name: str) -> int:
     return image_id
 
 
+def delete_image(user_id: int, image_id: int) -> None:
+    conn = get_connection()
+    try:
+        img = image.find_by_id(conn, image_id)
+        if img is None:
+            raise ValidationError("Image does not exist.")
+        elif img["user_id"] != user_id:
+            raise ValidationError("This image is not yours.")
+        image.delete(conn, image_id)
+        conn.commit()
+        image_filename = IMAGE_DIR / img["filename"]
+        image_filename.unlink(missing_ok=True)
+
+    finally:
+        conn.close()
+
+
 def image_path(image_id: int) -> Path | None:
     conn = get_connection()
     try:

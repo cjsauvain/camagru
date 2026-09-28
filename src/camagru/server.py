@@ -4,12 +4,14 @@ from typing import Any
 from collections.abc import Iterable
 from wsgiref.simple_server import WSGIRequestHandler, WSGIServer, make_server
 from wsgiref.types import WSGIEnvironment
+from xml.dom import ValidationErr
 from camagru.lib.request import Request
 from camagru.lib.response import forbidden, server_error, set_cookie
 from camagru.lib.security import verify_csrf
 from camagru.lib.static import static
 from camagru.router import router
 from camagru.services.auth import current_user
+from camagru.services.errors import ValidationError
 
 
 CSRF_LIFETIME = 86400
