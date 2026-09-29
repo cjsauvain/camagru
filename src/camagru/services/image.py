@@ -19,16 +19,21 @@ IMAGE_DIR = Path(
 ).parent / "images"
 
 
-def create_image(user_id: int, photo: bytes, overlay_name: str) -> int:
+def create_image(user_id: int, photo: bytes, overlay_names: list[str]) -> int:
     if len(photo) != PHOTO_SIZE:
         raise ValidationError("Photo must be 640x480.")
 
-    overlay = overlays.get(overlay_name)
-    if overlay is None:
-        raise ValidationError("Overlay does not exist.")
+    buf = bytearray(photo)
+    buf[3::4] = b"\xff" * (len(buf) // 4)
+    merged = bytes(buf)
 
-    superposition_img = blend(photo, overlay)
-    encoded_img = png.encode(superposition_img)
+    for name in overlay_names:
+        overlay = overlays.get(name)
+        if overlay is None:
+            raise ValidationError("Overlay does not exist.")
+        merged = blend(merged, overlay).pixels
+
+    encoded_img = png.encode(png.Image(640, 480, merged))
     filename = secrets.token_hex(16) + ".png"
     os.makedirs(IMAGE_DIR, exist_ok=True)
 

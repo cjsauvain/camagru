@@ -17,6 +17,7 @@ def reset_password_form(request: Request, reset_token: str) -> tuple[str, list, 
             csrf_token=request.csrf_token,
             user=request.user,
             reset_token=quote(reset_token, safe=""),
+            username="",
             errors=""
         )
     )
@@ -39,6 +40,7 @@ def reset_password_submit(request: Request, reset_token: str) -> tuple[str, list
                 "Camagru - Reset Password",
                 csrf_token=request.csrf_token,
                 user=request.user, reset_token=reset_token,
+                username="",
                 errors=str(e)
             )
         )

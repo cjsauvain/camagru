@@ -16,9 +16,9 @@ def image_create(request: Request) -> tuple[str, list, bytes]:
             content_type="text/plain; charset=utf-8"
         )
 
-    overlay_name = request.query.get("overlay", "")
+    overlay_names = [n for n in request.query.get("overlay", "").split(",") if n]
     try:
-        image_id = create_image(request.user["id"], request.body, overlay_name)
+        image_id = create_image(request.user["id"], request.body, overlay_names)
 
     except ValidationError as e:
         return response(

@@ -10,11 +10,11 @@ var webcamReady = false
 var fileImage = false
 
 
-function send(pixels, overlay) {
+function send(pixels, overlays) {
     button.disabled = true
     errorBox.textContent = "Processing..."
 
-    fetch('/images?overlay=' + encodeURIComponent(overlay), {
+    fetch('/images?overlay=' + encodeURIComponent(overlays.join(',')), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/octet-stream',
@@ -42,14 +42,18 @@ function send(pixels, overlay) {
 }
 
 
-function selectedOverlay() {
-    var checked = document.querySelector('input[name="overlay"]:checked')
-    return checked ? checked.value : null
+function selectedOverlays() {
+    var checked = document.querySelectorAll('input[name="overlay"]:checked')
+    var values = []
+    for (var i = 0; i < checked.length; i++) {
+        values.push(checked[i].value)
+    }
+    return values
 }
 
 
 function updateButton() {
-    button.disabled = !(selectedOverlay() && (webcamReady || fileImage))
+    button.disabled = !(webcamReady || fileImage)
 }
 
 
@@ -74,7 +78,7 @@ button.addEventListener('click', function () {
     var source = fileImage ? uploadPreview : video
     ctx.drawImage(source, 0, 0, 640, 480)
     var pixels = ctx.getImageData(0, 0, 640, 480).data
-    send(pixels, selectedOverlay())
+    send(pixels, selectedOverlays())
 })
 
 upload.addEventListener('change', function () {
