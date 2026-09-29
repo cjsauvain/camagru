@@ -64,11 +64,6 @@ navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } })
         errorBox.textContent = "Webcam unavailable. You can still upload a picture below."
     })
 
-var radios = document.querySelectorAll('input[name="overlay"]')
-for (var i = 0; i < radios.length; i++) {
-    radios[i].addEventListener('change', updateButton)
-}
-
 video.addEventListener('playing', function () {
     webcamReady = true
     updateButton()
